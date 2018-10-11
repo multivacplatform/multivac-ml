@@ -29,20 +29,14 @@ licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT"))
 libraryDependencies ++= {
   val sparkVer = "2.3.0"
   Seq(
-    "org.apache.spark" %% "spark-core" % sparkVer exclude("com.google.guava", "guava"),
+    "org.apache.spark" %% "spark-core" % sparkVer,
     "org.apache.spark" %% "spark-sql" % sparkVer,
     "org.apache.spark" %% "spark-streaming" % sparkVer % "provided" withSources(),
-    "org.apache.spark" %% "spark-mllib" %sparkVer % "provided" withSources(),
+    "org.apache.spark" %% "spark-mllib" %sparkVer,
     "org.apache.spark" %% "spark-hive" % sparkVer,
     "org.apache.spark" %% "spark-graphx" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-yarn" % sparkVer % "provided" withSources(),
-    "com.typesafe" % "config" % "1.3.1",
-    "com.johnsnowlabs.nlp" %% "spark-nlp" % "1.6.3" exclude("com.google.guava", "guava"),
-    "edu.stanford.nlp" % "stanford-corenlp" % "3.7.0",
-    "edu.stanford.nlp" % "stanford-corenlp" % "3.7.0" classifier "models",
-    "edu.stanford.nlp" % "stanford-corenlp" % "3.7.0" classifier "models-french",
-    "com.optimaize.languagedetector" % "language-detector" % "0.6",
-    "com.google.guava" % "guava" % "11.0.1"
+    "com.typesafe" % "config" % "1.3.1"
   )
 }
 
