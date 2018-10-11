@@ -1,0 +1,28 @@
+language: scala
+sudo: false
+# Cache settings here are based on latest SBT documentation.
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
+before_cache:
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
+jdk: oraclejdk8
+scala:
+   - 2.11.12
+
+# Build only master and version tags - http://stackoverflow.com/a/31882307/463761
+branches:
+  only:
+    - master
+    - /^v[0-9]/
+
+script:
+   - cd demo sbt ++$TRAVIS_SCALA_VERSION test
+   
+notifications:
+  email:
+    on_success: never
+
