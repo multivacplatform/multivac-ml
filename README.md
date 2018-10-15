@@ -20,11 +20,11 @@ Apache Spark 2.3 is used to extract more than 6 million phrases from 200,000 Eng
 * Training and transforming Word2Vec Model (Spark ML)
 
 
-##### TF-IDF
+#### TF-IDF
 coming soon!
 
-##### Universal Dependencies
-Trained models to extract Part of Speech (POS) from English and French documents by using Universal Dependencies tags. I used [Spark-NLP](https://github.com/JohnSnowLabs/spark-nlp) for training.
+#### Universal Dependencies
+Trained models to extract Part of Speech (POS) from English and French documents by using Universal Dependencies tags. [Spark-NLP](https://github.com/JohnSnowLabs/spark-nlp) is used for training.
 
 
 ## Code of Conduct
