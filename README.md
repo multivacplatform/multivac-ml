@@ -10,7 +10,7 @@ Plesae download already trained ML models form here:
 #### Word2Vec
 https://www.kaggle.com/mozzie/apache-spark-word2vec-model/downloads/apache-spark-word2vec-model.zip/1
 
-For more info visit `models/word2vec`
+For more info visit [models/word2vec](models/word2vec)
 
 
 #### TF-IDF
