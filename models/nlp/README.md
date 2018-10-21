@@ -1,9 +1,110 @@
 ### NLP
 
-#### Download
-coming soon
+### Download
+`English(UD_English-EWT)`
+https://www.kaggle.com/mozzie/apache-spark-universal-part-of-speech/downloads/apache-spark-universal-part-of-speech.zip/1
 
-Trained models to extract Part of Speech (POS) from English and French documents by using Universal Dependencies tags. [Spark-NLP](https://github.com/JohnSnowLabs/spark-nlp) is used for training.
+### Context
+
+Apache Spark POS tagger model trained by [Universal Treebanks Version v2.2][1] (UD_English-EWT). [Spark-NLP][2] is used to train the POS tagger model.
+
+### Universal POS tags
+Alphabetical listing
+
+* ADJ: adjective
+* ADP: adposition
+* ADV: adverb
+* AUX: auxiliary
+* CCONJ: coordinating conjunction
+* DET: determiner
+* INTJ: interjection
+* NOUN: noun
+* NUM: numeral
+* PART: particle
+* PRON: pronoun
+* PROPN: proper noun
+* PUNCT: punctuation
+* SCONJ: subordinating conjunction
+* SYM: symbol
+* VERB: verb
+* X: other
+
+### Usage
+You can simply download this model and load it into your Apache Spark ML pipeline:
+
+    import org.apache.spark.ml._
+    
+    val pipeLinePOSTaggerModel = PipelineModel.read.load("/tmp/multivac_nlp_pos_UD_English-EWT")
+    
+    //Testing Dataframe
+    val testEnglishDF = spark.createDataFrame(Seq(
+      (0, """What if Google Morphed Into GoogleOS? What if Google expanded on its search-engine (and now e-mail) wares into a full-fledged operating system? [via Microsoft Watch from Mary Jo Foley ]""")
+    )).toDF("content")
+    
+    val manualPipelineDF = pipeLinePOSTaggerModel.transform(testEnglishDF)
+    manualPipelineDF.select("token.result", "pos.result").show(false)
+    
+    |[What, if, Google, Morphed, Into, GoogleOS, ?, What, if, Google, expanded, on, its, search-engine, (, and, now, e-mail, ), wares, into, a, full-fledged, operating, system, ?, [, via, Microsoft, Watch, from, Mary, Jo, Foley, ]]|[PRON, SCONJ, PROPN, PROPN, PROPN, PROPN, PUNCT, PRON, SCONJ, PROPN, NOUN, ADP, PRON, NUM, PUNCT, CCONJ, ADV, VERB, PUNCT, VERB, ADP, DET, ADJ, NOUN, NOUN, PUNCT, PUNCT, ADP, PROPN, VERB, ADP, PROPN, PROPN, PROPN, PUNCT]|
+
+The schema and what else is in the transformed Dataframe:
+
+    root
+     |-- id: long (nullable = false)
+     |-- content: string (nullable = true)
+     |-- document: array (nullable = true)
+     |    |-- element: struct (containsNull = true)
+     |    |    |-- annotatorType: string (nullable = true)
+     |    |    |-- begin: integer (nullable = false)
+     |    |    |-- end: integer (nullable = false)
+     |    |    |-- result: string (nullable = true)
+     |    |    |-- metadata: map (nullable = true)
+     |    |    |    |-- key: string
+     |    |    |    |-- value: string (valueContainsNull = true)
+     |-- sentence: array (nullable = true)
+     |    |-- element: struct (containsNull = true)
+     |    |    |-- annotatorType: string (nullable = true)
+     |    |    |-- begin: integer (nullable = false)
+     |    |    |-- end: integer (nullable = false)
+     |    |    |-- result: string (nullable = true)
+     |    |    |-- metadata: map (nullable = true)
+     |    |    |    |-- key: string
+     |    |    |    |-- value: string (valueContainsNull = true)
+     |-- token: array (nullable = true)
+     |    |-- element: struct (containsNull = true)
+     |    |    |-- annotatorType: string (nullable = true)
+     |    |    |-- begin: integer (nullable = false)
+     |    |    |-- end: integer (nullable = false)
+     |    |    |-- result: string (nullable = true)
+     |    |    |-- metadata: map (nullable = true)
+     |    |    |    |-- key: string
+     |    |    |    |-- value: string (valueContainsNull = true)
+     |-- pos: array (nullable = true)
+     |    |-- element: struct (containsNull = true)
+     |    |    |-- annotatorType: string (nullable = true)
+     |    |    |-- begin: integer (nullable = false)
+     |    |    |-- end: integer (nullable = false)
+     |    |    |-- result: string (nullable = true)
+     |    |    |-- metadata: map (nullable = true)
+     |    |    |    |-- key: string
+     |    |    |    |-- value: string (valueContainsNull = true)
+     |-- token_array: array (nullable = true)
+     |    |-- element: string (containsNull = true)
+     |-- token_array_filtered: array (nullable = true)
+     |    |-- element: string (containsNull = true)
+
+### Environment
+* Cloudera CDH 5.15.1
+* Apache Spark 2.3.1
+* Spark NLP 1.6.2
+* Ubuntu 16.4.x
+
+###  Acknowledgements
+This work has been done by using ISC-PIF/CNRS(UPS3611) and Multivac Platform infrastructure.
+
+
+  [1]: http://universaldependencies.org/
+  [2]: https://github.com/JohnSnowLabs/spark-nlp
+
 
 
 ## Code of Conduct
