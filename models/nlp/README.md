@@ -1,8 +1,8 @@
 ### NLP
 
 ### Download
-`English(UD_English-EWT)`
-https://www.kaggle.com/mozzie/apache-spark-universal-part-of-speech/downloads/apache-spark-universal-part-of-speech.zip/1
+`English(UD_English-EWT)` and `French(UD_French-GSD)`
+https://www.kaggle.com/mozzie/apache-spark-universal-part-of-speech/downloads/apache-spark-universal-part-of-speech.zip/2
 
 ### Context
 
