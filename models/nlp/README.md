@@ -6,7 +6,11 @@ https://www.kaggle.com/mozzie/apache-spark-universal-part-of-speech/downloads/ap
 
 ### Context
 
-Apache Spark POS tagger model trained by [Universal Treebanks Version v2.2][1] (UD_English-EWT). [Spark-NLP][2] is used to train the POS tagger model.
+Apache Spark POS tagger model trained by [Universal Treebanks Version v2.2][1]. [Spark-NLP][2] is used to train the POS tagger models.
+
+<b>English:</b> UD_English-EWT
+
+<b>French:</b> UD_French-GSD
 
 ### Universal POS tags
 Alphabetical listing
@@ -32,22 +36,24 @@ Alphabetical listing
 ### Usage
 You can simply download this model and load it into your Apache Spark ML pipeline:
 
-    import org.apache.spark.ml._
-    
-    val pipeLinePOSTaggerModel = PipelineModel.read.load("/tmp/multivac_nlp_pos_UD_English-EWT")
-    
-    //Testing Dataframe
-    val testEnglishDF = spark.createDataFrame(Seq(
-      (0, """What if Google Morphed Into GoogleOS? What if Google expanded on its search-engine (and now e-mail) wares into a full-fledged operating system? [via Microsoft Watch from Mary Jo Foley ]""")
-    )).toDF("content")
-    
-    val manualPipelineDF = pipeLinePOSTaggerModel.transform(testEnglishDF)
-    manualPipelineDF.select("token.result", "pos.result").show(false)
-    
-    |[What, if, Google, Morphed, Into, GoogleOS, ?, What, if, Google, expanded, on, its, search-engine, (, and, now, e-mail, ), wares, into, a, full-fledged, operating, system, ?, [, via, Microsoft, Watch, from, Mary, Jo, Foley, ]]|[PRON, SCONJ, PROPN, PROPN, PROPN, PROPN, PUNCT, PRON, SCONJ, PROPN, NOUN, ADP, PRON, NUM, PUNCT, CCONJ, ADV, VERB, PUNCT, VERB, ADP, DET, ADJ, NOUN, NOUN, PUNCT, PUNCT, ADP, PROPN, VERB, ADP, PROPN, PROPN, PROPN, PUNCT]|
+```
+import org.apache.spark.ml._
 
+val pipeLinePOSTaggerModel = PipelineModel.read.load("/tmp/multivac_nlp_pos_UD_English-EWT")
+
+//Testing Dataframe
+val rawData = List("""What if Google Morphed Into GoogleOS? What if Google expanded on its search-engine (and now e-mail) wares into a full-fledged operating system? [via Microsoft Watch from Mary Jo Foley ]""")    
+val testEnglishDF = rawData.toDF("content")
+
+val manualPipelineDF = pipeLinePOSTaggerModel.transform(testEnglishDF)
+manualPipelineDF.select("token.result", "pos.result").show(false)
+
+|[What, if, Google, Morphed, Into, GoogleOS, ?, What, if, Google, expanded, on, its, search-engine, (, and, now, e-mail, ), wares, into, a, full-fledged, operating, system, ?, [, via, Microsoft, Watch, from, Mary, Jo, Foley, ]]
+|[PRON, SCONJ, PROPN, PROPN, PROPN, PROPN, PUNCT, PRON, SCONJ, PROPN, NOUN, ADP, PRON, NUM, PUNCT, CCONJ, ADV, VERB, PUNCT, VERB, ADP, DET, ADJ, NOUN, NOUN, PUNCT, PUNCT, ADP, PROPN, VERB, ADP, PROPN, PROPN, PROPN, PUNCT]|
+```
 The schema and what else is in the transformed Dataframe:
 
+```
     root
      |-- id: long (nullable = false)
      |-- content: string (nullable = true)
@@ -91,6 +97,7 @@ The schema and what else is in the transformed Dataframe:
      |    |-- element: string (containsNull = true)
      |-- token_array_filtered: array (nullable = true)
      |    |-- element: string (containsNull = true)
+```
 
 ### Environment
 * Cloudera CDH 5.15.1
