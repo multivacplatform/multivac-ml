@@ -15,4 +15,21 @@ object MultivacDemo {
     word2VecModel.findSynonyms("climate change", 10).show(false)
 
   }
+
+  def posTaggerEnglsih_ml(
+                   spark: SparkSession,
+                   inputPath: String
+                 ): Unit = {
+    import spark.implicits._
+
+    val pipeLinePOSTaggerModel = PipelineModel.read.load(inputPath)
+    //Testing Dataframe
+    val rawData = List("""What if Google Morphed Into GoogleOS? What if Google expanded on its search-engine (and now e-mail) wares into a full-fledged operating system? [via Microsoft Watch from Mary Jo Foley ]""")
+
+    val testEnglishDF = rawData.toDF("content")
+
+    val manualPipelineDF = pipeLinePOSTaggerModel.transform(testEnglishDF)
+    manualPipelineDF.select("token.result", "pos.result").show(false)
+
+  }
 }
