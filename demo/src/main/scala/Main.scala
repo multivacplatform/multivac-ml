@@ -3,5 +3,6 @@ object Main {
     val spark = SessionBuilder.buildSession()
 
     MultivacDemo.word2Vec_ml(spark, "src/main/resources/models/multivac_word2vec_ml_200k")
+    MultivacDemo.posTaggerEnglsih_ml(spark, "src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
   }
 }
