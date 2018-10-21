@@ -12,7 +12,7 @@ object SessionBuilder {
       .config("spark.serializer","org.apache.spark.serializer.KryoSerializer")
       .getOrCreate
 
-    spark.sparkContext.setLogLevel("INFO")
+    spark.sparkContext.setLogLevel("WARN")
 
     spark
   }
