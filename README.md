@@ -12,12 +12,13 @@ https://www.kaggle.com/mozzie/apache-spark-word2vec-model/downloads/apache-spark
 
 For more info visit [models/word2vec](models/word2vec)
 
+#### Universal Dependencies
+Trained models to extract Part of Speech (POS) from English and French documents by using Universal Dependencies tags. [Spark-NLP](https://github.com/JohnSnowLabs/spark-nlp) is used for training.
+For more info visit [models/nlp](models/nlp)
+
 
 #### TF-IDF
 coming soon!
-
-#### Universal Dependencies
-Trained models to extract Part of Speech (POS) from English and French documents by using Universal Dependencies tags. [Spark-NLP](https://github.com/JohnSnowLabs/spark-nlp) is used for training.
 
 
 ## Code of Conduct
