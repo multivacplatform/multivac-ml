@@ -8,14 +8,14 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 Plesae download already trained ML models form here:
 
 #### Word2Vec
-https://www.kaggle.com/mozzie/apache-spark-word2vec-model/downloads/apache-spark-word2vec-model.zip/1
+Apache Spark word2vec trained by 6 million phrases from 200,000 English Wikipedia pages.
 
-For more info visit [models/word2vec](models/word2vec)
+For more download and info visit [models/word2vec](models/word2vec)
 
 #### Universal Dependencies
-Trained models to extract Part of Speech (POS) from English and French documents by using Universal Dependencies tags. [Spark-NLP](https://github.com/JohnSnowLabs/spark-nlp) is used for training.
+Pre-trained models to extract Part of Speech (POS) from English and French documents by using Universal Dependencies tags. [Spark-NLP](https://github.com/JohnSnowLabs/spark-nlp) is used for training.
 
-For more info visit [models/nlp](models/nlp)
+For more download and info visit [models/nlp](models/nlp)
 
 
 #### TF-IDF
