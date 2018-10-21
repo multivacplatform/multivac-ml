@@ -95,7 +95,7 @@ The schema and what else is in the transformed Dataframe:
 ### Environment
 * Cloudera CDH 5.15.1
 * Apache Spark 2.3.1
-* Spark NLP 1.6.2
+* Spark NLP 1.7.x
 * Ubuntu 16.4.x
 
 ###  Acknowledgements
