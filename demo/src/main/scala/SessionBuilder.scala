@@ -1,3 +1,4 @@
+import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.sql.SparkSession
 
 object SessionBuilder {
@@ -12,6 +13,8 @@ object SessionBuilder {
       .config("spark.serializer","org.apache.spark.serializer.KryoSerializer")
       .getOrCreate
 
+
+    LogManager.getRootLogger.setLevel(Level.WARN)
     spark.sparkContext.setLogLevel("WARN")
 
     spark
