@@ -1,9 +1,12 @@
-import org.apache.log4j.{Level, LogManager}
+import org.apache.log4j.{Level, LogManager, Logger}
 import org.apache.spark.sql.SparkSession
-
 object SessionBuilder {
   def buildSession(): SparkSession = {
 
+//    Logger.getLogger("com").setLevel(Level.ERROR)
+//    Logger.getLogger("org").setLevel(Level.ERROR)
+//    Logger.getLogger("akka").setLevel(Level.ERROR)
+//    LogManager.getRootLogger.setLevel(Level.ERROR)
 
     val spark: SparkSession = SparkSession.builder
       .appName("multivac-ml-demo")
@@ -13,10 +16,8 @@ object SessionBuilder {
       .config("spark.serializer","org.apache.spark.serializer.KryoSerializer")
       .getOrCreate
 
-
-    LogManager.getRootLogger.setLevel(Level.WARN)
-    spark.sparkContext.setLogLevel("WARN")
-
+    spark.sparkContext.setLogLevel("ERROR")
+    // export sparkSession
     spark
   }
 }
