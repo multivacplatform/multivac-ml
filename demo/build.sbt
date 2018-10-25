@@ -1,7 +1,6 @@
-
 name := "multivac-ml"
 
-version := "0.1"
+version := "1.0"
 
 scalaVersion := "2.11.12"
 
@@ -27,18 +26,17 @@ licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT"))
 //)
 
 libraryDependencies ++= {
-  val sparkVer = "2.3.0"
+  val sparkVer = "2.3.2"
   Seq(
     "org.apache.spark" %% "spark-core" % sparkVer,
     "org.apache.spark" %% "spark-sql" % sparkVer,
     "org.apache.spark" %% "spark-streaming" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-mllib" %sparkVer,
-    "org.apache.spark" %% "spark-hive" % sparkVer,
+    "org.apache.spark" %% "spark-hive" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-graphx" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-yarn" % sparkVer % "provided" withSources(),
     "com.typesafe" % "config" % "1.3.1",
     "com.johnsnowlabs.nlp" %% "spark-nlp" % "1.7.2"
-
   )
 }
 
