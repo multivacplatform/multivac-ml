@@ -85,29 +85,29 @@ object TestAccuracy {
   }
 
   def posTaggerFrench_ml(
-                           spark: SparkSession,
-                           testPath: String,
-                           modelPath: String
-                         ): Unit = {
+                          spark: SparkSession,
+                          testPath: String,
+                          modelPath: String
+                        ): Unit = {
     import spark.implicits._
 
 
     val testInput = spark.read.text(testPath).as[String]
     val extractedTokensTags = testInput.map(s => s.split("\t")
       .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
-      .map{x => if(x.length > 1){x(1) + "_" + x(3)} else{"endOfLine"}}
+      .map{x => if(x.length > 1){x(1) + "-" + x(3)} else{"endOfLine"}}
       .map(x => x.mkString)
       .reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
 
     val testTokensTagsDF = spark.sparkContext.parallelize(extractedTokensTags)
       .toDF("arrays")
       .withColumn("id", monotonically_increasing_id)
-      .withColumn("testTokens", extractTokens($"arrays"))
-      .withColumn("testTags", extractTags($"arrays"))
+      .withColumn("testTokens", extractFrenchTokens($"arrays"))
+      .withColumn("testTags", extractFrenchTags($"arrays"))
       .drop("arrays")
 
     println("Count of extracted POS tags DF: ", testTokensTagsDF.count())
-    testTokensTagsDF.filter("id=4").show(false)
+    testTokensTagsDF.show()
 
     //Convert CoNLL-U to Text for training the test dataset
     val testSentencesDF = testInput
@@ -119,7 +119,7 @@ object TestAccuracy {
       .withColumn("id", monotonically_increasing_id)
 
     println("Count of extracted sentences DF: ", testSentencesDF.count())
-    testSentencesDF.filter("id=4").show(false)
+    testSentencesDF.show()
     //Load pre-trained pos model
     val pipeLinePOSTaggerModel = PipelineModel.read.load(modelPath)
 
@@ -130,34 +130,33 @@ object TestAccuracy {
         $"pos.result".alias("predictedTags")
       )
     println("Count of trained sentences DF: ", manualPipelineDF.count())
-    manualPipelineDF.filter("id=4").show(false)
+    manualPipelineDF.show()
 
+    val joinedDF = manualPipelineDF.join(testTokensTagsDF, Seq("id"))
+    //      .withColumn("predictedTokensLength", calLengthOfArray($"predictedTokens"))
+    //      .withColumn("predictedTagsLength", calLengthOfArray($"predictedTags"))
+    //      .withColumn("testTokensLength", calLengthOfArray($"testTokens"))
+    //      .withColumn("testTagsLength", calLengthOfArray($"testTags"))
+    //      .withColumn("equalTags", col("predictedTagsLength") === col("testTagsLength"))
 
-    val joinedDF = manualPipelineDF
-      .join(testTokensTagsDF, Seq("id"))
-      .withColumn("predictedTokensLength", calLengthOfArray($"predictedTokens"))
-      .withColumn("predictedTagsLength", calLengthOfArray($"predictedTags"))
-      .withColumn("testTokensLength", calLengthOfArray($"testTokens"))
-      .withColumn("testTagsLength", calLengthOfArray($"testTags"))
-      .withColumn("equalTags", col("predictedTagsLength") === col("testTagsLength"))
-
-    joinedDF.show
-    joinedDF.filter("id=4").show(false)
+    println("Count of joined DF: ", joinedDF.count())
+    joinedDF.show(500)
+    joinedDF.filter("id=4").show()
     joinedDF.printSchema()
-
+    //    joinedDF.filter("equalTags = true").count
     // Due to different methods of tokenizing, the number of tokens may be different, we need the ones that are equal for accuracy test.
-    println("Equal number of tags between test and training:", joinedDF.filter("equalTags = true").count)
+    //    println("Equal number of tags between test and training:", joinedDF.filter("equalTags = true").count)
 
-    val accuracyDF = joinedDF.filter("equalTags = true")
-      .withColumn("correctPredictTags", compareTwoTagsArray($"testTags", $"predictedTags"))
-
-    val sumOfAllTags = accuracyDF.agg(
-      sum("testTagsLength").as("sum_testTagsLength"),
-      sum("predictedTagsLength").as("sum_predictedTagsLength"),
-      sum("correctPredictTags").as("sum_correctPredictTags")
-    ).withColumn("accuracy", ($"sum_correctPredictTags" * 100) / $"sum_predictedTagsLength")
-    sumOfAllTags.first()
-    sumOfAllTags.show()
+    //    val accuracyDF = joinedDF.filter("equalTags = true")
+    //      .withColumn("correctPredictTags", compareTwoTagsArray($"testTags", $"predictedTags"))
+    //
+    //    val sumOfAllTags = accuracyDF.agg(
+    //      sum("testTagsLength").as("sum_testTagsLength"),
+    //      sum("predictedTagsLength").as("sum_predictedTagsLength"),
+    //      sum("correctPredictTags").as("sum_correctPredictTags")
+    //    ).withColumn("accuracy", ($"sum_correctPredictTags" * 100) / $"sum_predictedTagsLength")
+    //    sumOfAllTags.first()
+    //    sumOfAllTags.show()
 
   }
 
@@ -176,6 +175,23 @@ object TestAccuracy {
       tagsArray += e.split("_")(1)
     }
     tagsArray
+  }
+  private def extractFrenchTokens= udf { docs: String =>
+    var tokensArray = ArrayBuffer[String]()
+    val splitedArray = docs.split("\\s+")
+    for(e <- splitedArray){
+      tokensArray += e.split("-")(0)
+    }
+    tokensArray
+  }
+  private def extractFrenchTags= udf { docs: String =>
+    var tagsArray = ArrayBuffer[String]()
+    val splitedArray = docs.split("\\s+")
+    for(e <- splitedArray){
+      tagsArray += e.split("-")(1)
+    }
+    tagsArray
+    //    splitedArray
   }
   private def calLengthOfArray= udf { docs: Seq[String] =>
     docs.length
