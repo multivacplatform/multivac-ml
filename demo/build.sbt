@@ -1,4 +1,5 @@
 name := "multivac-ml"
+organization := "fr.iscpif.multivac"
 
 version := "1.0"
 
