@@ -34,11 +34,11 @@ enablePlugins(JavaAppPackaging)
 libraryDependencies ++= {
   val sparkVer = "2.3.2"
   Seq(
-    "org.apache.spark" %% "spark-core" % sparkVer,
+    "org.apache.spark" %% "spark-core" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-sql" % sparkVer,
     "org.apache.spark" %% "spark-streaming" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-mllib" %sparkVer,
-    "org.apache.spark" %% "spark-hive" % sparkVer % "provided" withSources(),
+    "org.apache.spark" %% "spark-hive" % sparkVer,
     "org.apache.spark" %% "spark-graphx" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-yarn" % sparkVer % "provided" withSources(),
     "com.typesafe" % "config" % "1.3.1",
