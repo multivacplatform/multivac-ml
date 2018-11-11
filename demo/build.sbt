@@ -1,7 +1,7 @@
 name := "multivac-ml"
 organization := "fr.iscpif.multivac"
 
-version := "1.0"
+version := "1.0.0"
 
 scalaVersion := "2.11.12"
 
