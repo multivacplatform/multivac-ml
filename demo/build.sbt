@@ -33,7 +33,9 @@ enablePlugins(JavaAppPackaging)
 
 libraryDependencies ++= {
   val sparkVer = "2.3.2"
+  val hadoopVer = "2.7.2"
   Seq(
+    "org.apache.hadoop" % "hadoop-client" % hadoopVer % "provided" withSources(),
     "org.apache.spark" %% "spark-core" % sparkVer % "provided" withSources(),
     "org.apache.spark" %% "spark-sql" % sparkVer,
     "org.apache.spark" %% "spark-streaming" % sparkVer % "provided" withSources(),
@@ -63,7 +65,8 @@ assemblyExcludedJars in assembly := {
         j.data.getName.startsWith("spark-graphx") ||
         j.data.getName.startsWith("spark-yarn") ||
         j.data.getName.startsWith("spark-streaming") ||
-        j.data.getName.startsWith("hadoop")
+        j.data.getName.startsWith("hadoop") ||
+        j.data.getName.startsWith("hadoop-client")
     }
   }
 }
