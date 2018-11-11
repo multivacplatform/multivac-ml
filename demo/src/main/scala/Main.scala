@@ -8,5 +8,6 @@ object Main {
     TestAccuracy.posTaggerEnglish_ml(spark, "src/main/resources/data/en_ewt-ud-test.conllu", "src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
     // Not working as it's expected
     //TestAccuracy.posTaggerFrench_ml(spark, "src/main/resources/data/fr_gsd-ud-test.conllu", "src/main/resources/models/multivac_nlp_pos_UD_French-GSD")
+    spark.close()
   }
 }
