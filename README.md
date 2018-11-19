@@ -1,4 +1,4 @@
-# multivac-ml [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/multivacplatform/multivac-ml/blob/master/LICENSE) [![Build Status](https://travis-ci.org/multivacplatform/multivac-ml.svg?branch=master)](https://travis-ci.org/multivacplatform/multivac-ml) [![multivac discuss](https://img.shields.io/badge/multivac-discuss-ff69b4.svg)](https://discourse.iscpif.fr/c/multivac) [![multivac channel](https://img.shields.io/badge/multivac-chat-ff69b4.svg)](https://chat.iscpif.fr/channel/multivac) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmultivacplatform%2Fmultivac-ml.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmultivacplatform%2Fmultivac-ml?ref=badge_shield)
+# multivac-ml [![GitHub license](https://img.shields.io/badge/license-AGPL%20v3-orange.svg)](https://github.com/multivacplatform/multivac-ml/blob/master/LICENSE) [![Build Status](https://travis-ci.org/multivacplatform/multivac-ml.svg?branch=master)](https://travis-ci.org/multivacplatform/multivac-ml) [![multivac discuss](https://img.shields.io/badge/multivac-discuss-ff69b4.svg)](https://discourse.iscpif.fr/c/multivac) [![multivac channel](https://img.shields.io/badge/multivac-chat-ff69b4.svg)](https://chat.iscpif.fr/channel/multivac) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmultivacplatform%2Fmultivac-ml.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmultivacplatform%2Fmultivac-ml?ref=badge_shield)
 
 Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 
@@ -28,7 +28,7 @@ This, and all github.com/multivacplatform projects, are under the [Multivac Plat
 
 ## Copyright and License
 
-Code and documentation copyright (c) 2018 [ISCPIF - CNRS](http://iscpif.fr). Code released under the [MIT license](https://github.com/multivacplatform/multivac-ml/blob/master/LICENSE).
+Code and documentation copyright (c) 2018 [ISCPIF - CNRS](http://iscpif.fr). Code released under the [AGPL v3 license](https://github.com/multivacplatform/multivac-ml/blob/master/LICENSE).
 
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmultivacplatform%2Fmultivac-ml.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmultivacplatform%2Fmultivac-ml?ref=badge_large)
