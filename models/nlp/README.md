@@ -32,7 +32,7 @@ Apache Spark POS tagger model trained by [Universal Treebanks Version v2.2][1] d
 
 <b>French:</b> UD_French-GSD
 
-### Universal POS tags
+#### Universal POS tags
 Alphabetical listing
 
 * ADJ: adjective
@@ -53,7 +53,7 @@ Alphabetical listing
 * VERB: verb
 * X: other
 
-### Usage
+#### Usage
 You can simply download this model and load it into your Apache Spark ML pipeline:
 
 ```scala
@@ -119,13 +119,13 @@ The schema and what else is in the transformed Dataframe:
      |    |-- element: string (containsNull = true)
 ```
 
-### Environment
+#### Environment
 * Cloudera CDH 5.15.1
 * Apache Spark 2.3.1
 * Spark NLP 1.7.x
 * Ubuntu 16.4.x
 
-###  Acknowledgements
+####  Acknowledgements
 This work has been done by using ISC-PIF/CNRS(UPS3611) and Multivac Platform infrastructure.
 
 
