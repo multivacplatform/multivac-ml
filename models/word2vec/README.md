@@ -5,7 +5,7 @@
 **Dataverse:** 
 
 
-```bash
+```
 wget -O multivac_word2vec_ml_200k.tar.xz https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/WSWU7K/JZ7SHP
 ```
 Or simply click on this link to start the download: 
@@ -28,11 +28,11 @@ Apache Spark 2.3 is used to extract more than 6 million phrases from 200,000 Eng
 
 
 ## File Citation
-PANAHI, Maziyar, 2018, "multivac_word2vec_ml_200k.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/JZ7SHP, Harvard Dataverse, V1
+PANAHI, Maziyar;Chavalarias, David, 2018, "multivac_word2vec_ml_200k.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/JZ7SHP, Harvard Dataverse, V1
 
 
 ## Dataset Citation
-> PANAHI, Maziyar, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
+> PANAHI, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
 ## Code of Conduct
 
