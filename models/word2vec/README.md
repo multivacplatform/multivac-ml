@@ -1,6 +1,6 @@
 ## Word2Vec
 
-### Download
+## Download
 
 **Dataverse:** 
 
@@ -17,7 +17,7 @@ https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi
 
 https://www.kaggle.com/mozzie/apache-spark-word2vec-model/downloads/apache-spark-word2vec-model.zip/1
 
-### Description
+## Description
 
 Apache Spark 2.3 is used to extract more than 6 million phrases from 200,000 English Wikipedia pages. Here is the process of cleaning, extracting keywords, and training Word2Vec model:
 
