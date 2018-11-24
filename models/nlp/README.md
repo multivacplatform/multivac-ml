@@ -134,13 +134,13 @@ This work has been done by using ISC-PIF/CNRS(UPS3611) and Multivac Platform inf
 
 
 ## File Citation
-> PANAHI, Maziyar;Chavalarias, David, 2018, "multivac_nlp_pos_UD_English-EWT.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/J8HDKW, Harvard Dataverse, V1
+> Panahi, Maziyar;Chavalarias, David, 2018, "multivac_nlp_pos_UD_English-EWT.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/J8HDKW, Harvard Dataverse, V1
 
-> PANAHI, Maziyar;Chavalarias, David, 2018, "multivac_nlp_pos_UD_French-GSD.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/6SWRTT, Harvard Dataverse, V1
+> Panahi, Maziyar;Chavalarias, David, 2018, "multivac_nlp_pos_UD_French-GSD.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/6SWRTT, Harvard Dataverse, V1
 
 
 ## Dataset Citation
-> PANAHI, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
+> Panahi, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
 
 ## Code of Conduct
