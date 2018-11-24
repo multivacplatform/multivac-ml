@@ -21,6 +21,13 @@ Find out more and download POS trained model from: [models/nlp](models/nlp)
 #### TF-IDF
 Under development
 
+## Open Data
+**Multivac ML data**: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/WSWU7K
+**Multivac official open data**: https://dataverse.harvard.edu/dataverse/multivac
+
+
+## Dataset Citation
+> PANAHI, Maziyar, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
 ## Code of Conduct
 
