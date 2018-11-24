@@ -28,7 +28,7 @@ Under development
 
 
 ## Dataset Citation
-> PANAHI, Maziyar, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
+> PANAHI, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
 ## Code of Conduct
 
