@@ -30,11 +30,11 @@ Apache Spark 2.3 is used to extract more than 6 million phrases from 200,000 Eng
 
 
 ## File Citation
-> PANAHI, Maziyar;Chavalarias, David, 2018, "multivac_word2vec_ml_200k.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/JZ7SHP, Harvard Dataverse, V1
+> Panahi, Maziyar;Chavalarias, David, 2018, "multivac_word2vec_ml_200k.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/JZ7SHP, Harvard Dataverse, V1
 
 
 ## Dataset Citation
-> PANAHI, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
+> Panahi, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
 ## Code of Conduct
 
