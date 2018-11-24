@@ -1,12 +1,32 @@
 ### NLP
 
-### Download
+## Download
+
+**Dataverse:** 
+
+English
+```
+wget -O multivac_nlp_pos_UD_English-EWT.tar.xz https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/WSWU7K/J8HDKW
+```
+French
+```
+wget -O multivac_nlp_pos_UD_French-GSD.tar.xz https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/WSWU7K/6SWRTT
+```
+
+Or simply click on the links to start the download: 
+
+English: https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/WSWU7K/J8HDKW
+
+French: https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/WSWU7K/6SWRTT
+
+
+**Kaggle (you need to be logged-in):** 
 `English(UD_English-EWT)` and `French(UD_French-GSD)`
 https://www.kaggle.com/mozzie/apache-spark-universal-part-of-speech/downloads/apache-spark-universal-part-of-speech.zip/2
 
-### Context
+## Context
 
-Apache Spark POS tagger model trained by [Universal Treebanks Version v2.2][1]. [Spark-NLP][2] is used to train the POS tagger models.
+Apache Spark POS tagger model trained by [Universal Treebanks Version v2.2][1] datasets. The [Spark-NLP][2] library is used to train the POS tagger models.
 
 <b>English:</b> UD_English-EWT
 
@@ -36,7 +56,7 @@ Alphabetical listing
 ### Usage
 You can simply download this model and load it into your Apache Spark ML pipeline:
 
-```
+```scala
 import org.apache.spark.ml._
 
 val pipeLinePOSTaggerModel = PipelineModel.read.load("/tmp/multivac_nlp_pos_UD_English-EWT")
@@ -112,6 +132,15 @@ This work has been done by using ISC-PIF/CNRS(UPS3611) and Multivac Platform inf
   [1]: http://universaldependencies.org/
   [2]: https://github.com/JohnSnowLabs/spark-nlp
 
+
+## File Citation
+> PANAHI, Maziyar;Chavalarias, David, 2018, "multivac_nlp_pos_UD_English-EWT.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/J8HDKW, Harvard Dataverse, V1
+
+> PANAHI, Maziyar;Chavalarias, David, 2018, "multivac_nlp_pos_UD_French-GSD.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/6SWRTT, Harvard Dataverse, V1
+
+
+## Dataset Citation
+> PANAHI, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
 
 ## Code of Conduct
