@@ -73,3 +73,4 @@ fabric.properties
 .idea/httpRequests
 models/nlp/data
 src/main/resources/models
+src/test/resources/models
