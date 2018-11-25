@@ -1,7 +1,23 @@
-### Word2Vec
+## Word2Vec
 
-#### Download
+## Download
+
+**Dataverse:** 
+
+
+```
+wget -O multivac_word2vec_ml_200k.tar.xz https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/WSWU7K/JZ7SHP
+```
+Or simply click on this link to start the download: 
+
+https://dataverse.harvard.edu/api/access/datafile/:persistentId?persistentId=doi:10.7910/DVN/WSWU7K/JZ7SHP
+
+
+**Kaggle (you need to be logged-in):** 
+
 https://www.kaggle.com/mozzie/apache-spark-word2vec-model/downloads/apache-spark-word2vec-model.zip/1
+
+## Description
 
 Apache Spark 2.3 is used to extract more than 6 million phrases from 200,000 English Wikipedia pages. Here is the process of cleaning, extracting keywords, and training Word2Vec model:
 
@@ -11,6 +27,14 @@ Apache Spark 2.3 is used to extract more than 6 million phrases from 200,000 Eng
 * Normalizer (spark-nlp) POS Tagger (spark-nlp) Chuning with grammar rules to detect both uni-grams and multi-grams (spark-nlp)
 * Stop words remover (Spark ML)
 * Training and transforming Word2Vec Model (Spark ML)
+
+
+## File Citation
+> Panahi, Maziyar;Chavalarias, David, 2018, "multivac_word2vec_ml_200k.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/JZ7SHP, Harvard Dataverse, V1
+
+
+## Dataset Citation
+> Panahi, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
 ## Code of Conduct
 
