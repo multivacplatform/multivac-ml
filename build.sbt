@@ -16,26 +16,38 @@ val sparknlpVer = "1.7.2"
 
 lazy val root = (project in file("."))
   .settings(commonSettings)
+  .disablePlugins(AssemblyPlugin)
   .aggregate(
-    demo
+    demo,
+    ml
   )
 
 lazy val demo = project
   .settings(name := "demo")
   .settings(
     commonSettings,
-//    assemblySettings,
+    assemblySettings,
     libraryDependencies ++=
       analyticsDependencies ++
         testDependencies ++
         utilDependencies
   )
 
+lazy val ml = project
+  .settings(name := "ml")
+  .settings(
+    commonSettings,
+    assemblySettings,
+    libraryDependencies ++=
+      analyticsDependencies ++
+        testDependencies ++
+        utilDependencies
+  )
 // DEPENDENCIES
 
 lazy val analyticsDependencies = Seq(
   "org.apache.spark" %% "spark-core" % sparkVer % "provided" withSources(),
-  "org.apache.spark" %% "spark-mllib" %sparkVer
+  "org.apache.spark" %% "spark-mllib" %sparkVer % "provided" withSources()
 )
 
 lazy val testDependencies = Seq(
@@ -57,32 +69,40 @@ lazy val commonSettings = Seq(
   licenses := Seq("AGPL-3.0" -> url("https://opensource.org/licenses/AGPL-3.0"))
 )
 
-assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-  case x => MergeStrategy.first
-}
-
-assemblyExcludedJars in assembly := {
-  val cp = (fullClasspath in assembly).value
-  cp filter {
-    j => {
-      j.data.getName.startsWith("spark-core") ||
-        j.data.getName.startsWith("spark-sql") ||
-        j.data.getName.startsWith("spark-hive") ||
-        j.data.getName.startsWith("spark-mllib") ||
-        j.data.getName.startsWith("spark-graphx") ||
-        j.data.getName.startsWith("spark-yarn") ||
-        j.data.getName.startsWith("spark-streaming") ||
-        j.data.getName.startsWith("hadoop") ||
-        j.data.getName.startsWith("hadoop-client")
-    }
-  }
-}
-
 lazy val assemblySettings = Seq(
-  assemblyJarName in assembly := name.value + ".jar",
+  assemblyJarName in assembly := "multivac-" + name.value + ".jar",
+  assemblyExcludedJars in assembly := {
+    val cp = (fullClasspath in assembly).value
+    cp filter {
+      j => {
+        j.data.getName.startsWith("spark-core") ||
+          j.data.getName.startsWith("spark-sql") ||
+          j.data.getName.startsWith("spark-hive") ||
+          j.data.getName.startsWith("spark-mllib") ||
+          j.data.getName.startsWith("spark-graphx") ||
+          j.data.getName.startsWith("spark-yarn") ||
+          j.data.getName.startsWith("spark-streaming") ||
+          j.data.getName.startsWith("hadoop") ||
+          j.data.getName.startsWith("hadoop-client")
+      }
+    }
+  },
   assemblyMergeStrategy in assembly := {
-    case PathList("META-INF", xs @ _*) => MergeStrategy.discard
-    case _                             => MergeStrategy.first
+    case PathList("javax", "servlet", xs @ _*) => MergeStrategy.last
+    case PathList("javax", "activation", xs @ _*) => MergeStrategy.last
+    case PathList("org", "apache", xs @ _*) => MergeStrategy.last
+    case PathList("com", "google", xs @ _*) => MergeStrategy.last
+    case PathList("com", "esotericsoftware", xs @ _*) => MergeStrategy.last
+    case PathList("com", "codahale", xs @ _*) => MergeStrategy.last
+    case PathList("com", "yammer", xs @ _*) => MergeStrategy.last
+    case "about.html" => MergeStrategy.rename
+    case "META-INF/ECLIPSEF.RSA" => MergeStrategy.last
+    case "META-INF/mailcap" => MergeStrategy.last
+    case "META-INF/mimetypes.default" => MergeStrategy.last
+    case "plugin.properties" => MergeStrategy.last
+    case "log4j.properties" => MergeStrategy.last
+    case x =>
+      val oldStrategy = (assemblyMergeStrategy in assembly).value
+      oldStrategy(x)
   }
 )
