@@ -72,5 +72,5 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 models/nlp/data
-src/main/resources/models
-src/test/resources/models
+demo/src/main/resources/models
+demo/src/test/resources/models
