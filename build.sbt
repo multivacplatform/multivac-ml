@@ -1,3 +1,5 @@
+name := "multivac-ml"
+
 import sbtassembly.MergeStrategy
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 
@@ -10,14 +12,26 @@ val hadoopVer = "2.7.2"
 val scalaTestVer = "3.0.0"
 val sparknlpVer = "1.7.2"
 
-lazy val commonSettings = Seq(
-  name := "multivac-ml",
-  organization := "multivacplatform.org",
-  version := "1.0.0",
-  scalaVersion := "2.11.12",
-  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
-  licenses := Seq("AGPL-3.0" -> url("https://opensource.org/licenses/AGPL-3.0"))
-)
+// PROJECTS
+
+lazy val root = (project in file("."))
+  .settings(commonSettings)
+  .aggregate(
+    demo
+  )
+
+lazy val demo = project
+  .settings(name := "demo")
+  .settings(
+    commonSettings,
+//    assemblySettings,
+    libraryDependencies ++=
+      analyticsDependencies ++
+        testDependencies ++
+        utilDependencies
+  )
+
+// DEPENDENCIES
 
 lazy val analyticsDependencies = Seq(
   "org.apache.spark" %% "spark-core" % sparkVer % "provided" withSources(),
@@ -33,14 +47,15 @@ lazy val utilDependencies = Seq(
   "com.johnsnowlabs.nlp" %% "spark-nlp" % "1.7.3"
 )
 
-lazy val root = (project in file("."))
-  .settings(commonSettings)
-  .settings(
-    libraryDependencies ++=
-      analyticsDependencies ++
-        testDependencies ++
-        utilDependencies
-  )
+// SETTINGS
+
+lazy val commonSettings = Seq(
+  organization := "multivacplatform.org",
+  version := "1.0.0",
+  scalaVersion := "2.11.12",
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
+  licenses := Seq("AGPL-3.0" -> url("https://opensource.org/licenses/AGPL-3.0"))
+)
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
@@ -63,3 +78,11 @@ assemblyExcludedJars in assembly := {
     }
   }
 }
+
+lazy val assemblySettings = Seq(
+  assemblyJarName in assembly := name.value + ".jar",
+  assemblyMergeStrategy in assembly := {
+    case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+    case _                             => MergeStrategy.first
+  }
+)
