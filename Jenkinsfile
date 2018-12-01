@@ -14,7 +14,7 @@ pipeline {
                 script {
                     response = sh(
                             returnStdout: true,
-                            script: "apt-get install wget -y"
+                            script: "sudo apt-get install wget -y"
                     )
                 }
                 script {
