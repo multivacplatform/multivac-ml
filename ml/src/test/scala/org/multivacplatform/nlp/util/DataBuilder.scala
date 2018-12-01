@@ -26,6 +26,4 @@ package org.multivacplatform.nlp.util
 
 import org.scalatest.FlatSpec
 
-object DataBuilder extends FlatSpec {
-
-}
+object DataBuilder extends FlatSpec
