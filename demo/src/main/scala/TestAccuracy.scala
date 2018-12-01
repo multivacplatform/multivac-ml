@@ -29,13 +29,8 @@ import org.apache.spark.sql.functions.{col, monotonically_increasing_id, sum, ud
 import scala.collection.mutable.ArrayBuffer
 
 object TestAccuracy {
-  def posTaggerEnglish_ml(
-                           spark: SparkSession,
-                           testPath: String,
-                           modelPath: String
-                         ): Unit = {
+  def posTaggerEnglish_ml(spark: SparkSession, testPath: String, modelPath: String): Unit = {
     import spark.implicits._
-
 
     val testInput = spark.read.text(testPath).as[String]
     val extractedTokensTags = testInput.map(s => s.split("\t")
@@ -77,7 +72,6 @@ object TestAccuracy {
     println("Count of trained sentences DF: ", manualPipelineDF.count())
     manualPipelineDF.filter("id=4").show(false)
 
-
     val joinedDF = manualPipelineDF
       .join(testTokensTagsDF, Seq("id"))
       .withColumn("predictedTokensLength", calLengthOfArray($"predictedTokens"))
@@ -103,16 +97,10 @@ object TestAccuracy {
     ).withColumn("accuracy", ($"sum_correctPredictTags" * 100) / $"sum_predictedTagsLength")
     sumOfAllTags.first()
     sumOfAllTags.show()
-
   }
 
-  def posTaggerFrench_ml(
-                          spark: SparkSession,
-                          testPath: String,
-                          modelPath: String
-                        ): Unit = {
+  def posTaggerFrench_ml(spark: SparkSession, testPath: String, modelPath: String): Unit = {
     import spark.implicits._
-
 
     val testInput = spark.read.text(testPath).as[String]
     val extractedTokensTags = testInput.map(s => s.split("\t")
@@ -179,7 +167,6 @@ object TestAccuracy {
     //    ).withColumn("accuracy", ($"sum_correctPredictTags" * 100) / $"sum_predictedTagsLength")
     //    sumOfAllTags.first()
     //    sumOfAllTags.show()
-
   }
 
   private def extractTokens= udf { docs: String =>
