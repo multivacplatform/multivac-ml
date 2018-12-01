@@ -12,7 +12,9 @@ before_cache:
 jdk: oraclejdk8
 scala:
    - 2.11.12
-
+env:
+  global:
+    - TMPDIR=/tmp
 # Build only master and version tags - http://stackoverflow.com/a/31882307/463761
 branches:
   only:
