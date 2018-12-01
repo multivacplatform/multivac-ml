@@ -13,7 +13,6 @@ val scalaTestVer = "3.0.0"
 val sparknlpVer = "1.7.2"
 
 // PROJECTS
-
 lazy val root = (project in file("."))
   .settings(commonSettings)
   .disablePlugins(AssemblyPlugin)
@@ -44,10 +43,9 @@ lazy val ml = project
         utilDependencies
   )
 // DEPENDENCIES
-
 lazy val analyticsDependencies = Seq(
-  "org.apache.spark" %% "spark-core" % sparkVer % "provided" withSources(),
-  "org.apache.spark" %% "spark-mllib" %sparkVer % "provided" withSources()
+  "org.apache.spark" %% "spark-core" % sparkVer,
+  "org.apache.spark" %% "spark-mllib" %sparkVer
 )
 
 lazy val testDependencies = Seq(
@@ -56,7 +54,7 @@ lazy val testDependencies = Seq(
 
 lazy val utilDependencies = Seq(
   "com.typesafe" % "config" % "1.3.1",
-  "com.johnsnowlabs.nlp" %% "spark-nlp" % "1.7.3"
+  "com.johnsnowlabs.nlp" %% "spark-nlp" % sparknlpVer
 )
 
 // SETTINGS
