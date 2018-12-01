@@ -30,6 +30,8 @@ import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.rdd.RDD
 import org.multivacplatform.ml.util._
 
+import ResourceHelper.spark.implicits._
+
 class Multivac {
 
   /** Train
@@ -86,8 +88,6 @@ class Multivac {
         posTagger,
         tokenFinisher
       ))
-
-    import spark.implicits._
 
     pipeline.fit(Seq.empty[String].toDF(textColName))
   }
