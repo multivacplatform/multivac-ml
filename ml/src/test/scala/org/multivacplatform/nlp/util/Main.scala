@@ -25,6 +25,7 @@
 package org.multivacplatform.nlp.util
 
 import org.apache.log4j.{Level, LogManager, Logger}
+import org.multivacplatform.ml.util.ResourceHelper
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -33,7 +34,7 @@ object Main {
     Logger.getLogger("akka").setLevel(Level.INFO)
     LogManager.getRootLogger.setLevel(Level.INFO)
 
-    val spark = ResourceHelperTest.spark
+    val spark = ResourceHelper.spark
 
 
     spark.close()
