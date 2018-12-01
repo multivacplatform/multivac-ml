@@ -46,7 +46,7 @@ class Multivac {
 
     val applicationId = spark.sparkContext.applicationId
 
-    val conllOutputPath = s"/tmp/$applicationId/english_universal_tags"
+    val conllOutputPath = s"./data/english_universal_tags/$applicationId"
 
     val conlluConverterClass = new ConllConverter
 
