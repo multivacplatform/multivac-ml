@@ -28,7 +28,7 @@ import org.apache.spark.sql.SparkSession
 
 object ResourceHelperTest {
 
-  val spark: SparkSession = SparkSession.builder()
+  lazy val spark: SparkSession = SparkSession.builder()
     .appName("Multivac-ML-Spark")
     .master("local[1]")
     .config("spark.driver.memory","4G")
