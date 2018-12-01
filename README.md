@@ -13,7 +13,6 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 
 **Multivac Open Data**: [https://dataverse.harvard.edu/dataverse/multivac](https://dataverse.harvard.edu/dataverse/multivac)
 
-
 ## Dataset Citation
 > PANAHI, Maziyar;Chavalarias, David, 2018, "Multivac Machine Learning Models", https://doi.org/10.7910/DVN/WSWU7K, Harvard Dataverse, V1
 
