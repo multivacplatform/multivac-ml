@@ -14,12 +14,6 @@ pipeline {
                 script {
                     response = sh(
                             returnStdout: true,
-                            script: "sudo apt-get install wget -y"
-                    )
-                }
-                script {
-                    response = sh(
-                            returnStdout: true,
                             script: "wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-train.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-train.conllu"
                     )
                 }
