@@ -26,7 +26,7 @@ package org.multivacplatform.nlp.model
 
 import org.apache.spark.sql.Row
 import org.multivacplatform.ml.model.Multivac
-import org.multivacplatform.nlp.util.ResourceHelperTest
+import org.multivacplatform.ml.util.ResourceHelper
 import org.scalatest.FlatSpec
 
 trait POSTaggerModelBehavior { this: FlatSpec =>
@@ -35,7 +35,7 @@ trait POSTaggerModelBehavior { this: FlatSpec =>
 
     "Multivac ML Model for POS tagger" should s"successfully train, transform and tag sentences" in {
 
-      val spark = ResourceHelperTest.spark
+      val spark = ResourceHelper.spark
 
       val input = spark.sparkContext.textFile(trainingSentencesPath)
 
