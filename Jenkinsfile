@@ -9,10 +9,18 @@ pipeline {
                 echo "Compiled"
             }
         }
+        stage('Download required files') {
+            steps {
+                echo 'Testing..'
+                sh "wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-train.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-train.conllu"
+                sh "wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-dev.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-dev.conllu"
+            }
+        }
         stage('Test') {
             steps {
                 echo 'Testing..'
-                echo 'No test at this moment'
+                sh "${tool name: 'sbt', type: 'org.jvnet.hudson.plugins.SbtPluginBuilder$SbtInstallation'}/bin/sbt test"
+                echo 'Testing finished'
             }
         }
         stage('Assembly') {
