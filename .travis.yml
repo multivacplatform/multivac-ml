@@ -22,6 +22,8 @@ branches:
     - /^v[0-9]/
 
 script:
+   - wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-train.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-train.conllu
+   - wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-dev.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-dev.conllu
    - sbt ++$TRAVIS_SCALA_VERSION compile
    - sbt ++$TRAVIS_SCALA_VERSION test
    

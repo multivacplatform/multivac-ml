@@ -71,8 +71,8 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
-data/ud-treebanks-v2.2/
 data/english_universal_tags/
 models/nlp/data
 demo/src/main/resources/models
 demo/src/test/resources/models
+*.conllu
