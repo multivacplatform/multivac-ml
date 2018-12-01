@@ -4,10 +4,10 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 
 ## Project Structure
 
-+ **[models](models)** Offline ML Models (for downloads)
-    - **[models/word2vec](models/word2vec)** (Word2Vec Model)
-    - **[models/nlp](models/nlp)** (Part of Speech Models)
-+ **[demo](demo)** Demo project
+- [models](models) Offline ML Models (for downloads)
+    - [models/word2vec](models/word2vec) (Word2Vec Model)
+    - [models/nlp](models/nlp) (Part of Speech Models)
+- [demo](demo) Demo project
 
 
 ## Open Data
