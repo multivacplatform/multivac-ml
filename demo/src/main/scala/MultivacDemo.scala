@@ -28,10 +28,7 @@ import org.apache.spark.sql.SparkSession
 
 object MultivacDemo {
 
-  def word2Vec_ml(
-                    spark: SparkSession,
-                    inputPath: String
-                  ): Unit = {
+  def word2Vec_ml(spark: SparkSession, inputPath: String): Unit = {
 
     val pipeLineWord2VecModel = PipelineModel.read.load(inputPath)
     val word2VecModel = pipeLineWord2VecModel.stages.last.asInstanceOf[Word2VecModel]
@@ -40,10 +37,7 @@ object MultivacDemo {
 
   }
 
-  def posTaggerEnglish_ml(
-                   spark: SparkSession,
-                   inputPath: String
-                 ): Unit = {
+  def posTaggerEnglish_ml(spark: SparkSession, inputPath: String): Unit = {
     import spark.implicits._
 
     val pipeLinePOSTaggerModel = PipelineModel.read.load(inputPath)
@@ -54,13 +48,9 @@ object MultivacDemo {
 
     val manualPipelineDF = pipeLinePOSTaggerModel.transform(testEnglishDF)
     manualPipelineDF.select("token.result", "pos.result").show(false)
-
   }
 
-  def posTaggerFrench_ml(
-                           spark: SparkSession,
-                           inputPath: String
-                         ): Unit = {
+  def posTaggerFrench_ml(spark: SparkSession, inputPath: String): Unit = {
     import spark.implicits._
 
     val pipeLinePOSTaggerModel = PipelineModel.read.load(inputPath)
@@ -71,6 +61,5 @@ object MultivacDemo {
 
     val manualPipelineDF = pipeLinePOSTaggerModel.transform(testEnglishDF)
     manualPipelineDF.select("token.result", "pos.result").show(false)
-
   }
 }
