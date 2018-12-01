@@ -11,9 +11,19 @@ pipeline {
         }
         stage('Download required files') {
             steps {
-                echo 'Testing..'
-                sh "wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-train.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-train.conllu"
-                sh "wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-dev.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-dev.conllu"
+                script {
+                    response = sh(
+                            returnStdout: true,
+                            script: "wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-train.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-train.conllu",
+                    )
+                }
+                script {
+                    response = sh(
+                            returnStdout: true,
+                            script: "wget -O ./data/ud-treebanks-v2.2/en_ewt-ud-dev.conllu https://github.com/UniversalDependencies/UD_English-EWT/raw/master/en_ewt-ud-dev.conllu"
+                    )
+
+                }
             }
         }
         stage('Test') {
