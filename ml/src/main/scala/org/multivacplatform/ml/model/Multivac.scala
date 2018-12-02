@@ -75,10 +75,16 @@ class Multivac {
       .setOutputCol("pos")
       .setCorpus(path = outputConllFilesPath, delimiter = "_", options = posOptions)
 
-    // Finisher
+    // Finishers
     val tokenFinisher = new Finisher()
       .setInputCols("token")
       .setOutputCols("token_array")
+      .setCleanAnnotations(false)
+      .setOutputAsArray(true)
+
+    val posFinisher = new Finisher()
+      .setInputCols("pos")
+      .setOutputCols("pos_array")
       .setCleanAnnotations(false)
       .setOutputAsArray(true)
 
@@ -88,7 +94,8 @@ class Multivac {
         sentenceDetector,
         tokenizer,
         posTagger,
-        tokenFinisher
+        tokenFinisher,
+        posFinisher
       ))
 
     pipeline.fit(Seq.empty[String].toDF(textColName))
