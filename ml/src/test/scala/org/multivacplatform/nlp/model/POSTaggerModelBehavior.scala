@@ -31,18 +31,16 @@ import org.scalatest.FlatSpec
 
 trait POSTaggerModelBehavior { this: FlatSpec =>
 
-  def multivacTrainPOSModel(trainingSentencesPath: String, dataset: String, colName: String): Unit = {
+  def multivacTrainPOSModel(trainingSentencesPath: String, testDataset: String, colName: String): Unit = {
 
     "Multivac ML Model for POS tagger" should s"successfully train, transform and tag sentences" in {
 
       val spark = ResourceHelper.spark
 
-      val input = spark.sparkContext.textFile(trainingSentencesPath)
-
       val multivacML = new Multivac
-      val pipleLineModel = multivacML.train(inputDataset = input, iterationNum = 1, textColName = colName)
+      val pipleLineModel = multivacML.train(inputConllTrainingPath = trainingSentencesPath, iterationNum = 1, textColName = colName)
 
-      val wordDataFrame = spark.createDataFrame(Seq((0, dataset))).toDF("id", colName)
+      val wordDataFrame = spark.createDataFrame(Seq((0, testDataset))).toDF("id", colName)
 
       val df = pipleLineModel.transform(wordDataFrame)
       val posCol = df.select("pos")
@@ -57,6 +55,7 @@ trait POSTaggerModelBehavior { this: FlatSpec =>
       case class IndexedWord(word: String, begin: Int, end:Int) {
         def equals(o: IndexedWord): Boolean = { this.word == o.word && this.begin == o.begin && this.end == o.end }
       }
+
       val tokensTest2: Seq[IndexedWord] = tokensCol.collect.flatMap(r => r.getSeq[Row](0)).map(a => IndexedWord(a.getString(3), a.getInt(1), a.getInt(2)))
       val taggedWordsTest: Seq[IndexedWord] = posCol.collect.flatMap(r => r.getSeq[Row](0)).map(a => IndexedWord(a.getMap[String, String](4)("word"), a.getInt(1), a.getInt(2)))
 
