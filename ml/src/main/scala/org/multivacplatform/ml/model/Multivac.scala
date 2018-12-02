@@ -34,24 +34,26 @@ import ResourceHelper.spark.implicits._
 
 class Multivac {
 
+  private val spark = ResourceHelper.spark
+  private val applicationId = spark.sparkContext.applicationId
+  private val defaultConllOutputPath = s"./data/english_universal_tags/$applicationId"
   /** Train
     *
     * @note
-    * @param inputDataset input RDD[String] from `spark.sparkContext.textFile`
+    * @param inputConllTrainingPath path to ConLL file to train POS Model
+    * @param outputConllFilesPath output path to write converted CoNLL files `default: ./data/english_universal_tags/$applicationId`
+    * @param iterationNum number of iteration to train POS model
+    * @param textColName the name of column that contains the text to predict their POS tags
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def train(inputDataset: RDD[String], iterationNum: Int, textColName: String): PipelineModel = {
+  def train(inputConllTrainingPath: String, outputConllFilesPath: String = defaultConllOutputPath, iterationNum: Int = 5, textColName: String): PipelineModel = {
 
-    val spark = ResourceHelper.spark
-
-    val applicationId = spark.sparkContext.applicationId
-
-    val conllOutputPath = s"./data/english_universal_tags/$applicationId"
+    val input = spark.sparkContext.textFile(inputConllTrainingPath)
 
     val conlluConverterClass = new ConllConverter
 
-    val taggedConnlText = conlluConverterClass.extractingTagsInConllu(inputDataset)
-    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(conllOutputPath)
+    val taggedConnlText = conlluConverterClass.extractingTagsInConllu(input)
+    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilesPath)
 
     val documentAssembler = new DocumentAssembler()
       .setInputCol(textColName)
@@ -71,7 +73,7 @@ class Multivac {
       .setNIterations(iterationNum)
       .setInputCols(Array("sentence", "token"))
       .setOutputCol("pos")
-      .setCorpus(path = conllOutputPath, delimiter = "_", options = posOptions)
+      .setCorpus(path = outputConllFilesPath, delimiter = "_", options = posOptions)
 
     // Finisher
     val tokenFinisher = new Finisher()
