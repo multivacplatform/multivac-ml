@@ -37,12 +37,20 @@ class ConllConverter {
     */
   def extractingTagsInConllu(inputDataset: RDD[String]): Array[String] = {
 
-    val splitRdd = inputDataset.map(s => s.split("\t")
+    val originalTokens = inputDataset.map(s => s.split("\t")
       .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
       .map{x => if(x.length > 1){x(1) + "_" + x(3)} else{"endOfLine"}}
       .map(x => x.mkString)
-    // This looks really ugly! It must be fixed!
-    val lineByline = splitRdd.reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
-    lineByline
+
+    val lemmaTokens = inputDataset.map(s => s.split("\t")
+      .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
+      .map{x => if(x.length > 1){x(2) + "_" + x(3)} else{"endOfLine"}}
+      .map(x => x.mkString)
+
+    val labeledOriginalTokens = originalTokens.reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
+    val labeledLemmaTokens = lemmaTokens.reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
+    val mergedOriginalLemmaUD = labeledOriginalTokens.union(labeledLemmaTokens)
+    mergedOriginalLemmaUD
+
   }
 }
