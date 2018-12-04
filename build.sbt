@@ -31,6 +31,7 @@ lazy val demo = project
         testDependencies ++
         utilDependencies
   )
+  .dependsOn(ml)
 
 lazy val ml = project
   .settings(name := "ml")
@@ -44,8 +45,8 @@ lazy val ml = project
   )
 // DEPENDENCIES
 lazy val analyticsDependencies = Seq(
-  "org.apache.spark" %% "spark-core" % sparkVer,
-  "org.apache.spark" %% "spark-mllib" %sparkVer
+  "org.apache.spark" %% "spark-core" % sparkVer % "provided" withSources(),
+  "org.apache.spark" %% "spark-mllib" %sparkVer % "provided" withSources()
 )
 
 lazy val testDependencies = Seq(
