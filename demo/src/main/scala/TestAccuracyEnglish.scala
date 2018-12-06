@@ -44,6 +44,8 @@ object TestAccuracyEnglish {
 
     val conllSentencesDF = usgRDD.map(s => s.split("\n").filter(x => !x.startsWith("#"))).filter(x => x.length > 0).toDF("sentence")
 
+    conf.set("textinputformat.record.delimiter", "")
+
     val testTokensTagsDF = conllSentencesDF
       .withColumn("id", monotonically_increasing_id)
       .withColumn("testTokens", extractTokens($"sentence"))
