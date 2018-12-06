@@ -42,10 +42,6 @@ object TestAccuracyEnglish {
       pathCoNNLFile, classOf[TextInputFormat], classOf[LongWritable], classOf[Text], conf)
       .map{ case (_, v) => v.toString }
 
-    val usgPairRDD: RDD[(String, Seq[String])] = usgRDD.map(_.split("\n") match {
-      case Array(x, xs @ _*) => (x, xs)
-    })
-
     val conllSentencesDF = usgRDD.map(s => s.split("\n").filter(x => !x.startsWith("#"))).filter(x => x.length > 0).toDF("sentence")
 
     val testTokensTagsDF = conllSentencesDF
