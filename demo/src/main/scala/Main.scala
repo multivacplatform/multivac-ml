@@ -33,13 +33,13 @@ object Main {
 
     TrainModel.posTaggerEnglish_ml(
       "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
-      8,
+      5,
       "content"
     )
 
-    TestAccuracy.posTaggerEnglish_ml(
+    TestAccuracyEnglish.posTaggerEnglish_ml(
       spark,
-      "./data/ud-treebanks-v2.3/en_ewt-ud-test.conllu",
+      "./data/ud-treebanks-v2.2/en_ewt-ud-train.conllu",
       "demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT"
     )
 
