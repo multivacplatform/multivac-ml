@@ -25,7 +25,7 @@
 package org.multivacplatform.nlp.model
 
 import org.apache.spark.sql.Row
-import org.multivacplatform.ml.model.Multivac
+import org.multivacplatform.ml.model._
 import org.multivacplatform.ml.util.ResourceHelper
 import org.scalatest.FlatSpec
 
@@ -37,8 +37,7 @@ trait POSTaggerModelBehavior { this: FlatSpec =>
 
       val spark = ResourceHelper.spark
 
-      val multivacML = new Multivac
-      val pipleLineModel = multivacML.train(inputCoNNLFilePath = trainingSentencesPath, iterationNum = 1, textColName = colName)
+      val pipleLineModel = Multivac.nlp.train(inputCoNNLFilePath = trainingSentencesPath, iterationNum = 1, textColName = colName)
 
       val wordDataFrame = spark.createDataFrame(Seq((0, testDataset))).toDF("id", colName)
 
