@@ -59,7 +59,6 @@ lazy val utilDependencies = Seq(
 )
 
 // SETTINGS
-
 lazy val commonSettings = Seq(
   organization := "multivacplatform.org",
   version := "1.0.0",
