@@ -27,7 +27,6 @@ package org.multivacplatform.ml.model
 import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
 import com.johnsnowlabs.nlp.annotator.{PerceptronApproach, SentenceDetector, Tokenizer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
-import org.apache.spark.rdd.RDD
 import org.multivacplatform.ml.util._
 
 import ResourceHelper.spark.implicits._
@@ -40,20 +39,18 @@ class Multivac {
   /** Train
     *
     * @note
-    * @param inputConllTrainingPath path to ConLL file to train POS Model
-    * @param outputConllFilesPath output path to write converted CoNLL files `default: ./data/english_universal_tags/$applicationId`
+    * @param inputCoNNLFilePath path to ConLL file to train POS Model
+    * @param outputConllFilePath output path to write converted CoNLL files `default: ./data/english_universal_tags/$applicationId`
     * @param iterationNum number of iteration to train POS model
     * @param textColName the name of column that contains the text to predict their POS tags
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def train(inputConllTrainingPath: String, outputConllFilesPath: String = defaultConllOutputPath, iterationNum: Int = 5, textColName: String): PipelineModel = {
+  def train(inputCoNNLFilePath: String, outputConllFilePath: String = defaultConllOutputPath, iterationNum: Int = 5, textColName: String): PipelineModel = {
 
-    val input = spark.sparkContext.textFile(inputConllTrainingPath)
+    val conlluConverterClass = new CoNLLToPOSTextConverter
 
-    val conlluConverterClass = new ConllConverter
-
-    val taggedConnlText = conlluConverterClass.extractingTagsInConllu(input)
-    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilesPath)
+    val taggedConnlText = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath)
+    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
 
     val documentAssembler = new DocumentAssembler()
       .setInputCol(textColName)
@@ -73,7 +70,7 @@ class Multivac {
       .setNIterations(iterationNum)
       .setInputCols(Array("sentence", "token"))
       .setOutputCol("pos")
-      .setCorpus(path = outputConllFilesPath, delimiter = "_", options = posOptions)
+      .setCorpus(path = outputConllFilePath, delimiter = "_", options = posOptions)
 
     // Finishers
     val tokenFinisher = new Finisher()
