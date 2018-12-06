@@ -49,8 +49,10 @@ class Multivac {
 
     val conlluConverterClass = new CoNLLToPOSTextConverter
 
-    val taggedConnlText = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath)
-    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
+    val taggedConnlTextDF = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath, "pos_tagged")
+
+    taggedConnlTextDF.select("pos_tagged").write.mode("OverWrite").csv(outputConllFilePath)
+//    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
 
     val documentAssembler = new DocumentAssembler()
       .setInputCol(textColName)
