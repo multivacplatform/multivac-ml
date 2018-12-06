@@ -24,8 +24,12 @@
 
 package org.multivacplatform.ml.util
 
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SparkSession
+import org.apache.hadoop.io.{LongWritable, Text}
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions._
+
+import scala.collection.mutable.ArrayBuffer
 
 class CoNLLToPOSTextConverter {
 
@@ -34,27 +38,59 @@ class CoNLLToPOSTextConverter {
   /** Convert Conll-U to tagged-based text
     *
     * @note
-    * @param inputDataset input RDD[String] from `spark.sparkContext.textFile`
+    * @param inputCoNNLFilePath input RDD[String] from `spark.sparkContext.textFile`
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def extractingTagsInConllu(inputCoNNLFilePath: String): Array[String] = {
+  def extractingTagsInConllu(inputCoNNLFilePath: String, posTaggedColName: String): DataFrame = {
 
-    val inputCoNNLFileRDD = spark.sparkContext.textFile(inputCoNNLFilePath)
+    import spark.implicits._
 
-    val originalTokens = inputCoNNLFileRDD.map(s => s.split("\t")
-      .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
-      .map{x => if(x.length > 1){x(1) + "_" + x(3)} else{"endOfLine"}}
-      .map(x => x.mkString)
+    val conf = new org.apache.hadoop.mapreduce.Job().getConfiguration
+    conf.set("textinputformat.record.delimiter", "\n\n")
+
+    val usgRDD = spark.sparkContext.newAPIHadoopFile(
+      inputCoNNLFilePath, classOf[TextInputFormat], classOf[LongWritable], classOf[Text], conf)
+      .map{ case (_, v) => v.toString }
+
+    val conllSentencesDF = usgRDD.map(s => s.split("\n").filter(x => !x.startsWith("#")))
+      .filter(x => x.length > 0)
+      .toDF("sentence")
+
+    conllSentencesDF
+      .withColumn("pos_tagged", extractPOSTags($"sentence"))
+      .withColumn(posTaggedColName, concat_ws(" ", $"pos_tagged"))
+      .select(posTaggedColName)
+
+    /* Old way
+        val inputCoNNLFileRDD = spark.sparkContext.textFile(inputCoNNLFilePath)
+
+        val originalTokens = inputCoNNLFileRDD.map(s => s.split("\t")
+          .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
+          .map{x => if(x.length > 1){x(1) + "_" + x(3)} else{"endOfLine"}}
+          .map(x => x.mkString)
+     */
     /* This did not improve the accuracy!
         val lemmaTokens = inputCoNNLFileRDD.map(s => s.split("\t")
           .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
           .map{x => if(x.length > 1){x(2) + "_" + x(3)} else{"endOfLine"}}
           .map(x => x.mkString)
     */
-    val labeledOriginalTokens = originalTokens.reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
-    val labeledLemmaTokens = lemmaTokens.reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
-    val mergedOriginalLemmaUD = labeledOriginalTokens.union(labeledLemmaTokens)
-    mergedOriginalLemmaUD
+    /*
+        val labeledOriginalTokens = originalTokens.reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
+        val labeledLemmaTokens = lemmaTokens.reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
+        val mergedOriginalLemmaUD = labeledOriginalTokens.union(labeledLemmaTokens)
+        mergedOriginalLemmaUD
+    */
 
   }
+
+  private def extractPOSTags = udf { docs: Seq[String] =>
+    var posTagsArray = ArrayBuffer[String]()
+    for(e <- docs){
+      val splitedArray = e.split("\t")
+      posTagsArray += splitedArray(2) + "_" + splitedArray(3)
+    }
+    posTagsArray
+  }
+
 }
