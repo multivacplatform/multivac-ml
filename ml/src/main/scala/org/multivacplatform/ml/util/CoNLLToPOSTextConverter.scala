@@ -56,6 +56,8 @@ class CoNLLToPOSTextConverter {
       .filter(x => x.length > 0)
       .toDF("sentence")
 
+    conf.set("textinputformat.record.delimiter", "")
+
     conllSentencesDF
       .withColumn("pos_tagged", extractPOSTags($"sentence"))
       .withColumn(posTaggedColName, concat_ws(" ", $"pos_tagged"))
