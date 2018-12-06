@@ -27,7 +27,6 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{col, monotonically_increasing_id, sum, udf, when}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
-import org.apache.spark.rdd.RDD
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -57,7 +56,7 @@ object TestAccuracyEnglish {
     testTokensTagsDF.show
 
     // Convert CoNLL-U to Text for training the test Dataframe
-    // This Dataframe will be used for testing the POS Model (SentenceDetector, Tokenizer, and POS tagger)
+    // This DataFrame will be used for testing the POS Model (SentenceDetector, Tokenizer, and POS tagger)
     val testSentencesDF = spark.read.text(pathCoNNLFile).as[String]
       .map(s => s.split("\t").filter(x => x.startsWith("# text")))
       .flatMap(x => x)
@@ -90,7 +89,7 @@ object TestAccuracyEnglish {
       .withColumn("testTokensLength", calLengthOfArray($"testTokens"))
       .withColumn("testTagsLength", calLengthOfArray($"testTags"))
       .withColumn("tokensDiffFromTest", $"testTokensLength" - $"predictedTokensLength")
-      .withColumn("missingTokens",  when($"tokensDiffFromTest" < 0, -$"tokensDiffFromTest").otherwise($"tokensDiffFromTest"))
+//      .withColumn("missingTokens",  when($"tokensDiffFromTest" < 0, -$"tokensDiffFromTest").otherwise($"tokensDiffFromTest"))
       .withColumn("equalTags", col("predictedTagsLength") === col("testTagsLength"))
 
     joinedDF.show
@@ -98,16 +97,19 @@ object TestAccuracyEnglish {
     joinedDF.printSchema()
 
     val accuracyDF = joinedDF
-      .withColumn("correctPredictTags", compareTwoTagsArray($"testTokens", $"testTags", $"predictedTokens", $"predictedTags"))
+      .withColumn("correctPredictTokenTag", compareTwoTagsArray($"testTokens", $"testTags", $"predictedTokens", $"predictedTags"))
+      .withColumn("correctPredictToken", tokenMatcher($"testTokens", $"predictedTokens"))
 
     val sumOfAllTags = accuracyDF.agg(
-      sum("testTagsLength").as("sum_testTagsLength"),
-      sum("predictedTagsLength").as("sum_predictedTagsLength"),
-      sum("correctPredictTags").as("sum_correctPredictTags"),
-      sum("missingTokens").as("sum_missingTokens")
+      sum("testTagsLength").as("TotalWordsInTest"),
+      sum("predictedTagsLength").as("TotalWordsPredicted"),
+      sum("correctPredictToken").as("TotalTokenMatches"),
+      sum("correctPredictTokenTag").as("TotalTokenTagMatches")
+//      sum("missingTokens").as("TotalTokenMisses")
     )
-      .withColumn("accuracy_with_missing_tokens", ($"sum_correctPredictTags" * 100) / $"sum_testTagsLength")
-      .withColumn("accuracy_without_missing_tokens", ($"sum_correctPredictTags" * 100) / $"sum_predictedTagsLength")
+      .withColumn("accuracy_with_missing_tokens", ($"TotalTokenTagMatches" * 100) / $"TotalWordsInTest")
+      .withColumn("accuracy_without_missing_tokens", ($"TotalTokenTagMatches" * 100) / $"TotalWordsPredicted")
+      .withColumn("SimpleAccuracy", ($"TotalTokenTagMatches" * 100) / $"TotalTokenMatches")
 
     sumOfAllTags.first()
     sumOfAllTags.show()
@@ -145,16 +147,16 @@ object TestAccuracyEnglish {
       }
       correctTagsCount
     }
-    //testTagsWithIndex.find(_._1 == e._1).get._2 == e._2
-    //testTagsWithIndex.find(_ == (e._1, e._2)).isDefined
-    /*for (i <- testTags.indices){
-      if(i >= predictTags.length && i >= testTags.length) {
-        if(testTags(i) == predictTags(i))
-          correctTagsCount+=1
-      } else{
-        correctTagsCount = 0
-      }
-    }*/
     correctTagsCount
+  }
+  private def tokenMatcher= udf { (testTokens: Seq[String], predictTokens: Seq[String]) =>
+    var correctTokensCount = 0
+    for (e <- predictTokens) {
+      if (testTokens.contains(e)) {
+        correctTokensCount+=1
+      }
+      correctTokensCount
+    }
+    correctTokensCount
   }
 }
