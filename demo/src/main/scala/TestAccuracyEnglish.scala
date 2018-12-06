@@ -25,34 +25,42 @@
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{col, monotonically_increasing_id, sum, udf, when}
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
+import org.apache.hadoop.io.{LongWritable, Text}
+import org.apache.spark.rdd.RDD
 
 import scala.collection.mutable.ArrayBuffer
 
 object TestAccuracyEnglish {
-  def posTaggerEnglish_ml(spark: SparkSession, testPath: String, modelPath: String): Unit = {
+  def posTaggerEnglish_ml(spark: SparkSession, pathCoNNLFile: String, modelPath: String): Unit = {
     import spark.implicits._
 
-    val testInput = spark.read.text(testPath).as[String]
+    val conf = new org.apache.hadoop.mapreduce.Job().getConfiguration
+    conf.set("textinputformat.record.delimiter", "\n\n")
 
-    val extractedTokensTags = testInput.map(s => s.split("\t")
-      .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
-      .map{x => if(x.length > 1){x(1) + "_" + x(3)} else{"endOfLine"}}
-      .map(x => x.mkString)
-      .reduce((s1, s2) => s1 + " " + s2).split(" endOfLine | endOfLine")
+    val usgRDD = spark.sparkContext.newAPIHadoopFile(
+      pathCoNNLFile, classOf[TextInputFormat], classOf[LongWritable], classOf[Text], conf)
+      .map{ case (_, v) => v.toString }
 
-    val testTokensTagsDF = spark.sparkContext.parallelize(extractedTokensTags)
-      .toDF("arrays")
+    val usgPairRDD: RDD[(String, Seq[String])] = usgRDD.map(_.split("\n") match {
+      case Array(x, xs @ _*) => (x, xs)
+    })
+
+    val conllSentencesDF = usgRDD.map(s => s.split("\n").filter(x => !x.startsWith("#"))).filter(x => x.length > 0).toDF("sentence")
+
+    val testTokensTagsDF = conllSentencesDF
       .withColumn("id", monotonically_increasing_id)
-      .withColumn("testTokens", extractTokens($"arrays"))
-      .withColumn("testTags", extractTags($"arrays"))
-      .drop("arrays")
+      .withColumn("testTokens", extractTokens($"sentence"))
+      .withColumn("testTags", extractTags($"sentence"))
+      .drop("sentence")
 
     println("Count of CoNLL extracted sentence from tokens_tags: ", testTokensTagsDF.count())
     testTokensTagsDF.filter("id=4").show(false)
+    testTokensTagsDF.show
 
     // Convert CoNLL-U to Text for training the test Dataframe
     // This Dataframe will be used for testing the POS Model (SentenceDetector, Tokenizer, and POS tagger)
-    val testSentencesDF = testInput
+    val testSentencesDF = spark.read.text(pathCoNNLFile).as[String]
       .map(s => s.split("\t").filter(x => x.startsWith("# text")))
       .flatMap(x => x)
       .map(x => x.replace("# text = ", ""))
@@ -62,7 +70,7 @@ object TestAccuracyEnglish {
 
     println("Count of CoNLL extracted sentences from text DF: ", testSentencesDF.count())
     testSentencesDF.filter("id=4").show(false)
-
+    testSentencesDF.show
     // check if the number of sentences from tokens is equal the number of sentences from the text
 
     //Load pre-trained pos model
@@ -76,7 +84,7 @@ object TestAccuracyEnglish {
       )
     println("Count of trained sentences DF: ", manualPipelineDF.count())
     manualPipelineDF.filter("id=4").show(false)
-
+    manualPipelineDF.show
     val joinedDF = manualPipelineDF
       .join(testTokensTagsDF, Seq("id"))
       .withColumn("predictedTokensLength", calLengthOfArray($"predictedTokens"))
@@ -97,7 +105,8 @@ object TestAccuracyEnglish {
     val sumOfAllTags = accuracyDF.agg(
       sum("testTagsLength").as("sum_testTagsLength"),
       sum("predictedTagsLength").as("sum_predictedTagsLength"),
-      sum("correctPredictTags").as("sum_correctPredictTags")
+      sum("correctPredictTags").as("sum_correctPredictTags"),
+      sum("missingTokens").as("sum_missingTokens")
     )
       .withColumn("accuracy_with_missing_tokens", ($"sum_correctPredictTags" * 100) / $"sum_testTagsLength")
       .withColumn("accuracy_without_missing_tokens", ($"sum_correctPredictTags" * 100) / $"sum_predictedTagsLength")
@@ -106,49 +115,32 @@ object TestAccuracyEnglish {
     sumOfAllTags.show()
   }
 
-  private def extractTokens= udf { docs: String =>
+  private def extractTokens= udf { docs: Seq[String] =>
     var tokensArray = ArrayBuffer[String]()
-    val splitedArray = docs.split("\\s+")
-    for(e <- splitedArray){
-      tokensArray += e.split("_")(0)
+    for(e <- docs){
+      val splitedArray = e.split("\t")
+      tokensArray += splitedArray(1)
     }
     tokensArray
   }
-  private def extractTags= udf { docs: String =>
+
+  private def extractTags= udf { docs: Seq[String] =>
     var tagsArray = ArrayBuffer[String]()
-    val splitedArray = docs.split("\\s+")
-    for(e <- splitedArray){
-      tagsArray += e.split("_")(1)
+    for(e <- docs){
+      val splitedArray = e.split("\t")
+      tagsArray += splitedArray(3)
     }
     tagsArray
   }
-  private def extractFrenchTokens= udf { docs: String =>
-    var tokensArray = ArrayBuffer[String]()
-    val splitedArray = docs.split("\\s+")
-    for(e <- splitedArray){
-      tokensArray += e.split("-")(0)
-    }
-    tokensArray
-  }
-  private def extractFrenchTags= udf { docs: String =>
-    var tagsArray = ArrayBuffer[String]()
-    val splitedArray = docs.split("\\s+")
-    for(e <- splitedArray){
-      tagsArray += e.split("-")(1)
-    }
-    tagsArray
-    //    splitedArray
-  }
+
   private def calLengthOfArray= udf { docs: Seq[String] =>
     docs.length
   }
+
   private def compareTwoTagsArray= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String],predictTags: Seq[String]) =>
     var correctTagsCount = 0
-
-
     val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (v,k)}
     val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (v,k)}
-
     for (e <- predictTagsWithTokens) {
       if (testTagsWithTokens.contains(e)) {
         correctTagsCount+=1
