@@ -31,9 +31,8 @@ import org.apache.spark.sql.functions._
 
 import scala.collection.mutable.ArrayBuffer
 
-class CoNLLToPOSTextConverter {
+class CoNLLToPOSTextConverter extends Serializable {
 
-  private val spark = ResourceHelper.spark
 
   /** Convert Conll-U to tagged-based text
     *
@@ -42,6 +41,7 @@ class CoNLLToPOSTextConverter {
     * @return Array[String] to be saved for training `Spark-NLP`
     */
   def extractingTagsInConllu(inputCoNNLFilePath: String, posTaggedColName: String): DataFrame = {
+    val spark = ResourceHelper.spark
 
     import spark.implicits._
 
