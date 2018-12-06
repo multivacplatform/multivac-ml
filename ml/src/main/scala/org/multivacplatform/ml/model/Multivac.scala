@@ -51,7 +51,7 @@ class Multivac {
 
     val taggedConnlTextDF = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath, "pos_tagged")
 
-    taggedConnlTextDF.select("pos_tagged").write.mode("OverWrite").csv(outputConllFilePath)
+    taggedConnlTextDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(outputConllFilePath)
 //    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
 
     val documentAssembler = new DocumentAssembler()
@@ -72,7 +72,7 @@ class Multivac {
       .setNIterations(iterationNum)
       .setInputCols(Array("sentence", "token"))
       .setOutputCol("pos")
-      .setCorpus(path = outputConllFilePath, delimiter = "_", options = posOptions)
+      .setCorpus(path = s"$outputConllFilePath/*", delimiter = "_", options = posOptions)
 
     // Finishers
     val tokenFinisher = new Finisher()
