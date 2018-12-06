@@ -38,7 +38,7 @@ trait POSTaggerModelBehavior { this: FlatSpec =>
       val spark = ResourceHelper.spark
 
       val multivacML = new Multivac
-      val pipleLineModel = multivacML.train(inputConllTrainingPath = trainingSentencesPath, iterationNum = 1, textColName = colName)
+      val pipleLineModel = multivacML.train(inputCoNNLFilePath = trainingSentencesPath, iterationNum = 1, textColName = colName)
 
       val wordDataFrame = spark.createDataFrame(Seq((0, testDataset))).toDF("id", colName)
 
