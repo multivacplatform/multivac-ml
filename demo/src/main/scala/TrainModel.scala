@@ -28,7 +28,7 @@ object TrainModel {
   def posTaggerEnglish_ml(trainingSentencesPath: String, iterNum: Int, colName: String): Unit = {
 
     val multivacML = new Multivac
-    val pipleLineModel = multivacML.train(inputConllTrainingPath = trainingSentencesPath, iterationNum = iterNum, textColName = colName)
+    val pipleLineModel = multivacML.train(inputCoNNLFilePath = trainingSentencesPath, iterationNum = iterNum, textColName = colName)
 
     pipleLineModel.write.overwrite.save("demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
   }
