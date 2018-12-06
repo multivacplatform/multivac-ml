@@ -22,20 +22,22 @@
  * SOFTWARE.
  */
 
+import org.multivacplatform.ml.model.Multivac
+
 object Main {
   def main(args: Array[String]): Unit = {
     val spark = SessionBuilder.buildSession()
-
 
     MultivacDemo.word2Vec_ml(spark, "demo/src/main/resources/models/multivac_word2vec_ml_200k")
     MultivacDemo.posTaggerEnglish_ml(spark, "demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
     MultivacDemo.posTaggerFrench_ml(spark, "demo/src/main/resources/models/multivac_nlp_pos_UD_French-GSD")
 
-    TrainModel.posTaggerEnglish_ml(
-      "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
-      5,
-      "content"
+    val pipleLineModel = Multivac.nlp.train(
+      inputCoNNLFilePath = "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
+      iterationNum = 6,
+      textColName = "content"
     )
+    pipleLineModel.write.overwrite.save("demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
 
     TestAccuracyEnglish.posTaggerEnglish_ml(
       spark,
@@ -43,8 +45,6 @@ object Main {
       "demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT"
     )
 
-    // Not working as it's expected
-    //TestAccuracy.posTaggerFrench_ml(spark, "src/main/resources/data/fr_gsd-ud-test.conllu", "src/main/resources/models/multivac_nlp_pos_UD_French-GSD")
     spark.close()
   }
 }
