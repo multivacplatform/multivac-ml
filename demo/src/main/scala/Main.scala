@@ -28,20 +28,20 @@ object Main {
   def main(args: Array[String]): Unit = {
     val spark = SessionBuilder.buildSession()
 
-    MultivacDemo.word2Vec_ml(spark, "demo/src/main/resources/models/multivac_word2vec_ml_200k")
-    MultivacDemo.posTaggerEnglish_ml(spark, "demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
-    MultivacDemo.posTaggerFrench_ml(spark, "demo/src/main/resources/models/multivac_nlp_pos_UD_French-GSD")
+//    MultivacDemo.word2Vec_ml(spark, "demo/src/main/resources/models/multivac_word2vec_ml_200k")
+//    MultivacDemo.posTaggerEnglish_ml(spark, "demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
+//    MultivacDemo.posTaggerFrench_ml(spark, "demo/src/main/resources/models/multivac_nlp_pos_UD_French-GSD")
+//
+//    val pipleLineModel = Multivac.nlp.train(
+//      inputCoNNLFilePath = "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
+//      iterationNum = 6,
+//      textColName = "content"
+//    )
+//    pipleLineModel.write.overwrite.save("demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
 
-    val pipleLineModel = Multivac.nlp.train(
-      inputCoNNLFilePath = "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
-      iterationNum = 6,
-      textColName = "content"
-    )
-    pipleLineModel.write.overwrite.save("demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
-
-    TestAccuracyEnglish.posTaggerEnglish_ml(
+    TestAccuracy.posTaggerEnglish_ml(
       spark,
-      "./data/ud-treebanks-v2.2/en_ewt-ud-train.conllu",
+      "./data/ud-treebanks-v2.2/en_ewt-ud-test.conllu",
       "demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT"
     )
 
