@@ -64,7 +64,7 @@ lazy val commonSettings = Seq(
   version := "1.0.0",
   scalaVersion := "2.11.12",
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
-  licenses := Seq("AGPL-3.0" -> url("https://opensource.org/licenses/AGPL-3.0"))
+  licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT"))
 )
 
 lazy val assemblySettings = Seq(
