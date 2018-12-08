@@ -24,7 +24,7 @@
 
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, monotonically_increasing_id, sum, udf, when}
+import org.apache.spark.sql.functions.{col, monotonically_increasing_id, sum, udf, when, explode}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
 
@@ -110,8 +110,10 @@ object TestAccuracy {
       .withColumn("false_positive", calculateFalsePositives($"testTokens", $"testTags", $"predictedTokens", $"predictedTags"))
       .withColumn("false_negative", calculateFalseNegatives($"testTokens", $"testTags", $"predictedTokens", $"predictedTags"))
       .withColumn("correctPredictToken", tokenMatcher($"testTokens", $"predictedTokens"))
+      .withColumn("missingTokens", extractMissingTokens($"testTokens", $"predictedTokens"))
 
     accuracyDF.show()
+    accuracyDF.select($"missingTokens", explode($"missingTokens").as("tokens")).groupBy("tokens").count.orderBy($"count".desc).show
 
     val sumOfAllTags = accuracyDF.agg(
       sum("testTagsLength").as("TotalWordsInTest"),
@@ -127,7 +129,6 @@ object TestAccuracy {
       .withColumn("Recall", $"True_Positives" / ($"True_Positives" + $"False_Negatives"))
     //      .withColumn("accuracy_with_missing_tokens", ($"True_Positives" * 100) / $"TotalWordsInTest")
     //      .withColumn("accuracy_without_missing_tokens", ($"True_Positives" * 100) / $"TotalWordsPredicted")
-
 
     sumOfAllTags.first()
     sumOfAllTags.show()
@@ -162,7 +163,7 @@ object TestAccuracy {
     val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (v,k)}
     for (e <- predictTagsWithTokens) {
       if (testTagsWithTokens.contains(e)) {
-        truePositivesTotal+=1
+        truePositivesTotal += 1
       }
       truePositivesTotal
     }
@@ -206,5 +207,15 @@ object TestAccuracy {
       correctTokensCount
     }
     correctTokensCount
+  }
+  private def extractMissingTokens= udf { (testTokens: Seq[String], predictTokens: Seq[String]) =>
+    var missingTokensArray = ArrayBuffer[String]()
+
+    for (e <- testTokens) {
+      if (!predictTokens.contains(e)) {
+        missingTokensArray += e
+      }
+    }
+    missingTokensArray
   }
 }
