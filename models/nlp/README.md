@@ -132,6 +132,21 @@ This work has been done by using ISC-PIF/CNRS(UPS3611) and Multivac Platform inf
   [1]: http://universaldependencies.org/
   [2]: https://github.com/JohnSnowLabs/spark-nlp
 
+## Facts and Fiures
+### POS Tagger models
+
+**Enlgish POS tagger model (UD_English-EWT)**
+- SimpleAccuracy: **0.92**
+- Precision: **0.91**
+- Recall: **0.97**
+```
+ +----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
+|TotalWordsInTest|TotalWordsPredicted|TotalTokenMatches|True_Positives|False_Positives|False_Negatives|    SimpleAccuracy|         Precision|            Recall|
++----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
+|           25097|              25334|            24514|         22589|           2059|            633|0.9214734437464306|0.9164638104511522|0.9727413659460856|
++----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
+
+```
 
 ## File Citation
 > Panahi, Maziyar;Chavalarias, David, 2018, "multivac_nlp_pos_UD_English-EWT.tar.xz", Multivac Machine Learning Models, https://doi.org/10.7910/DVN/WSWU7K/PSXOAJ, Harvard Dataverse, V2
