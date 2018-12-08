@@ -90,6 +90,15 @@ class CoNLLToPOSTextConverter extends Serializable {
     var posTagsArray = ArrayBuffer[String]()
     for(e <- docs){
       val splitedArray = e.split("\t")
+      posTagsArray += splitedArray(1) + "_" + splitedArray(3)
+    }
+    posTagsArray
+  }
+
+  private def extractLemmaTags = udf { docs: Seq[String] =>
+    var posTagsArray = ArrayBuffer[String]()
+    for(e <- docs){
+      val splitedArray = e.split("\t")
       posTagsArray += splitedArray(2) + "_" + splitedArray(3)
     }
     posTagsArray
