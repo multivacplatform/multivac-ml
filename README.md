@@ -8,6 +8,23 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 -   [demo](demo) Demo project
 
 
+## Facts and Fiures
+### POS Tagger models
+
+**Enlgish POS tagger model (UD_English-EWT)**
+- SimpleAccuracy: **0.92**
+- Precision: **0.91**
+- Recall: **0.97**
+```
+ +----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
+|TotalWordsInTest|TotalWordsPredicted|TotalTokenMatches|True_Positives|False_Positives|False_Negatives|    SimpleAccuracy|         Precision|            Recall|
++----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
+|           25097|              25334|            24514|         22589|           2059|            633|0.9214734437464306|0.9164638104511522|0.9727413659460856|
++----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
+
+```
+
+
 ## Open Data
 **Multivac ML data**: [https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/WSWU7K](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/WSWU7K)
 
