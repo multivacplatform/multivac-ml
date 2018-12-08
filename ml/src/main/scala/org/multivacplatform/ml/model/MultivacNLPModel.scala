@@ -24,11 +24,10 @@
 
 package org.multivacplatform.ml.model
 
-import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
+import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher, annotator}
 import com.johnsnowlabs.nlp.annotator.{PerceptronApproach, SentenceDetector, Tokenizer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.multivacplatform.ml.util._
-
 import ResourceHelper.spark.implicits._
 
 protected class MultivacNLPModel extends Serializable {
@@ -45,11 +44,12 @@ protected class MultivacNLPModel extends Serializable {
     * @param textColName the name of column that contains the text to predict their POS tags
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def train(inputCoNNLFilePath: String, outputConllFilePath: String = defaultConllOutputPath, iterationNum: Int = 5, textColName: String): PipelineModel = {
+  def train(inputCoNNLFilePath: String, outputConllFilePath: String = defaultConllOutputPath, lang: String = "english", iterationNum: Int = 5, textColName: String): PipelineModel = {
 
     val conlluConverterClass = new CoNLLToPOSTextConverter
 
     val taggedConnlTextDF = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath, "pos_tagged")
+
 
     taggedConnlTextDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(outputConllFilePath)
 //    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
@@ -63,8 +63,20 @@ protected class MultivacNLPModel extends Serializable {
       .setOutputCol("sentence")
 
     val tokenizer = new Tokenizer()
-      .setInputCols(Array("sentence"))
-      .setOutputCol("token")
+
+    lang match {
+      case "english" =>
+        tokenizer
+        .setInputCols(Array("sentence"))
+        .setOutputCol("token")
+        .addInfixPattern("(\\w+)([^\\s\\p{L}]{1})+(\\w+)")
+        .addInfixPattern("(\\p{L}+)('{1}\\p{L}+)")
+        .addInfixPattern("(\\p{L}+)(n't\\b)")
+        .addInfixPattern("((?:\\p{L}\\.)+)")
+        .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
+        .addInfixPattern("([\\p{L}\\w]+)")
+      case "french" =>
+    }
 
     // POS tagging
     val posOptions = Map("format" -> "text", "repartition" -> "1")
