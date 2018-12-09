@@ -12,17 +12,21 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 ### POS Tagger models
 
 **Enlgish POS tagger model (UD_English-EWT)**
-- SimpleAccuracy: **0.92**
-- Precision: **0.91**
+- Precision: **0.92**
 - Recall: **0.97**
 ```
- +----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
-|TotalWordsInTest|TotalWordsPredicted|TotalTokenMatches|True_Positives|False_Positives|False_Negatives|    SimpleAccuracy|         Precision|            Recall|
-+----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
-|           25097|              25334|            24514|         22589|           2059|            633|0.9214734437464306|0.9164638104511522|0.9727413659460856|
-+----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+------------------+
-
++----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+
+|TotalWordsInTest|TotalWordsPredicted|TotalTokenMatches|True_Positives|False_Positives|False_Negatives|         Precision|            Recall|
++----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+
+|           25097|              25334|            24514|         22589|           2059|            633|0.9164638104511522|0.9727413659460856|
++----------------+-------------------+-----------------+--------------+---------------+---------------+------------------+------------------+
 ```
+
+> Precision is "how useful the POS results are", and Recall is "how complete the results are". Precision can be seen as a measure of exactness or quality, whereas recall is a measure of completeness or quantity. https://en.wikipedia.org/wiki/Precision_and_recall
+
+![Precision](https://wikimedia.org/api/rest_v1/media/math/render/svg/26106935459abe7c266f7b1ebfa2a824b334c807)
+
+![Recall](https://wikimedia.org/api/rest_v1/media/math/render/svg/4c233366865312bc99c832d1475e152c5074891b)
 
 
 ## Open Data
