@@ -124,7 +124,7 @@ object TestAccuracy {
       sum("false_negative").as("False_Negatives")
       //      sum("missingTokens").as("TotalTokenMisses")
     )
-      .withColumn("SimpleAccuracy", $"True_Positives" / $"TotalTokenMatches")
+//      .withColumn("SimpleAccuracy", $"True_Positives" / $"TotalTokenMatches")
       .withColumn("Precision", $"True_Positives" / ($"True_Positives" + $"False_Positives"))
       .withColumn("Recall", $"True_Positives" / ($"True_Positives" + $"False_Negatives"))
     //      .withColumn("accuracy_with_missing_tokens", ($"True_Positives" * 100) / $"TotalWordsInTest")
