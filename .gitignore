@@ -71,7 +71,7 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
-data/english_universal_tags/
+data/universal_tags/
 models/nlp/data
 demo/src/main/resources/models
 demo/src/test/resources/models
