@@ -34,7 +34,7 @@ protected class MultivacNLPModel extends Serializable {
 
   private val spark = ResourceHelper.spark
   private val applicationId = spark.sparkContext.applicationId
-  private val defaultConllOutputPath = s"./data/english_universal_tags/$applicationId"
+  private val defaultConllOutputPath = s"./data/universal_tags/$applicationId"
   /** Train
     *
     * @note
@@ -52,7 +52,7 @@ protected class MultivacNLPModel extends Serializable {
 
 
     taggedConnlTextDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(outputConllFilePath)
-//    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
+    //    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
 
     val documentAssembler = new DocumentAssembler()
       .setInputCol(textColName)
@@ -67,15 +67,25 @@ protected class MultivacNLPModel extends Serializable {
     lang match {
       case "english" =>
         tokenizer
-        .setInputCols(Array("sentence"))
-        .setOutputCol("token")
-        .addInfixPattern("(\\w+)([^\\s\\p{L}]{1})+(\\w+)")
-        .addInfixPattern("(\\p{L}+)('{1}\\p{L}+)")
-        .addInfixPattern("(\\p{L}+)(n't\\b)")
-        .addInfixPattern("((?:\\p{L}\\.)+)")
-        .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
-        .addInfixPattern("([\\p{L}\\w]+)")
+          .setInputCols(Array("sentence"))
+          .setOutputCol("token")
+          .addInfixPattern("(\\w+)([^\\s\\p{L}]{1})+(\\w+)")
+          .addInfixPattern("(\\p{L}+)('{1}\\p{L}+)")
+          .addInfixPattern("(\\p{L}+)(n't\\b)")
+          .addInfixPattern("((?:\\p{L}\\.)+)")
+          .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
+          .addInfixPattern("([\\p{L}\\w]+)")
       case "french" =>
+        tokenizer
+          .setInputCols(Array("sentence"))
+          .setOutputCol("token")
+          .addInfixPattern("(\\w+)([^\\s\\p{L}]{1})+(\\w+)")
+          .addInfixPattern("(\\w+'{1})(\\w+)") // (l',air) instead of (l, 'air)
+          .addInfixPattern("(\\p{L}+)(n't\\b)")
+          .addInfixPattern("((?:\\p{L}\\.)+)")
+          .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
+          .addInfixPattern("([\\p{L}\\w]+)")
+          .setCompositeTokens(Array("e-mail"))
     }
 
     // POS tagging
