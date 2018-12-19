@@ -71,7 +71,7 @@ class CoNLLToPOSTextConverter extends Serializable {
           .map{x => if(x.length > 1){x(1) + "_" + x(3)} else{"endOfLine"}}
           .map(x => x.mkString)
      */
-    /* 
+    /*
         val lemmaTokens = inputCoNNLFileRDD.map(s => s.split("\t")
           .filter(x => !x.startsWith("#"))).filter(x => x.length > 0)
           .map{x => if(x.length > 1){x(2) + "_" + x(3)} else{"endOfLine"}}
