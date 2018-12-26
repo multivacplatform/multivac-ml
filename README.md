@@ -14,13 +14,11 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 **Enlgish POS tagger model (UD_English-EWT)**
 - Precision: **0.93**
 - Recall: **0.97**
-```
 
-|TotalWords|         Precision|            Recall|
-|----------|------------------|------------------|
-| 25097    |0.934             |             0.973|
+| TotalWords | Precision        | Recall           |
+|------------|------------------|------------------|
+| 25097      |    0.934         |        0.973     |
 
-```
 
 > Precision is "how useful the POS results are", and Recall is "how complete the results are". Precision can be seen as a measure of exactness or quality, whereas recall is a measure of completeness or quantity. https://en.wikipedia.org/wiki/Precision_and_recall
 
