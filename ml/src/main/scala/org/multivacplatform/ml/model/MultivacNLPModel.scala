@@ -85,7 +85,7 @@ protected class MultivacNLPModel extends Serializable {
           .addInfixPattern("((?:\\p{L}\\.)+)")
           .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
           .addInfixPattern("([\\p{L}\\w]+)")
-//          .setCompositeTokensPatterns(Array("e-mail"))
+          .setCompositeTokensPatterns(Array("e-mail"))
     }
 
     // POS tagging
