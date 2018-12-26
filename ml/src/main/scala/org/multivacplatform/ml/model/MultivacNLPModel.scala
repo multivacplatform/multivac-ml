@@ -1,3 +1,11 @@
+package org.multivacplatform.ml.model
+
+import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
+import com.johnsnowlabs.nlp.annotator.{PerceptronApproach, PerceptronApproachDistributed, SentenceDetector, Tokenizer}
+import org.apache.spark.ml.{Pipeline, PipelineModel}
+import org.multivacplatform.ml.util._
+import ResourceHelper.spark.implicits._
+
 /*
  * MIT License
  *
@@ -21,14 +29,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-package org.multivacplatform.ml.model
-
-import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
-import com.johnsnowlabs.nlp.annotator.{PerceptronApproach, PerceptronApproachDistributed, SentenceDetector, Tokenizer}
-import org.apache.spark.ml.{Pipeline, PipelineModel}
-import org.multivacplatform.ml.util._
-import ResourceHelper.spark.implicits._
 
 protected class MultivacNLPModel extends Serializable {
 
