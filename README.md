@@ -12,13 +12,13 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 ### POS Tagger models
 
 **Enlgish POS tagger model (UD_English-EWT)**
-- Precision: **0.92**
+- Precision: **0.93**
 - Recall: **0.97**
 ```
 
 |TotalWords|         Precision|            Recall|
 |----------|------------------|------------------|
-| 25097    |0.934|0.973|
+| 25097    |0.934             |             0.973|
 
 ```
 
