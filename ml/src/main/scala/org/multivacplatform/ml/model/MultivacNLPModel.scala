@@ -24,8 +24,8 @@
 
 package org.multivacplatform.ml.model
 
-import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher, annotator}
-import com.johnsnowlabs.nlp.annotator.{PerceptronApproach, SentenceDetector, Tokenizer}
+import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
+import com.johnsnowlabs.nlp.annotator.{PerceptronApproach, PerceptronApproachDistributed, SentenceDetector, Tokenizer}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.multivacplatform.ml.util._
 import ResourceHelper.spark.implicits._
@@ -85,7 +85,7 @@ protected class MultivacNLPModel extends Serializable {
           .addInfixPattern("((?:\\p{L}\\.)+)")
           .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
           .addInfixPattern("([\\p{L}\\w]+)")
-          .setCompositeTokensPatterns(Array("e-mail"))
+//          .setCompositeTokensPatterns(Array("e-mail"))
     }
 
     // POS tagging
@@ -94,7 +94,12 @@ protected class MultivacNLPModel extends Serializable {
       .setNIterations(iterationNum)
       .setInputCols(Array("sentence", "token"))
       .setOutputCol("pos")
-      .setCorpus(path = s"$outputConllFilePath", delimiter = "_", options = posOptions)
+      .setCorpus(
+        path = s"$outputConllFilePath/*.txt",
+        delimiter = "_",
+        readAs = "SPARK_DATASET",
+        options = posOptions
+      )
 
     // Finishers
     val tokenFinisher = new Finisher()
