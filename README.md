@@ -8,7 +8,7 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 -   [demo](demo) Demo project
 
 
-## Facts and Fiures
+## Facts and Figures
 ### POS Tagger models
 
 **Enlgish POS tagger model (UD_English-EWT)**
