@@ -6,7 +6,7 @@ import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 enablePlugins(JavaServerAppPackaging)
 enablePlugins(JavaAppPackaging)
 
-val sparkVer = "2.3.2"
+val sparkVer = "2.4.0"
 val corenlpVer = "3.9.2"
 val hadoopVer = "2.7.2"
 val scalaTestVer = "3.0.0"
