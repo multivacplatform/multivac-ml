@@ -85,7 +85,7 @@ protected class MultivacNLPModel extends Serializable {
           .addInfixPattern("((?:\\p{L}\\.)+)")
           .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
           .addInfixPattern("([\\p{L}\\w]+)")
-          .setCompositeTokens(Array("e-mail"))
+          .setCompositeTokensPatterns(Array("e-mail"))
     }
 
     // POS tagging
@@ -94,7 +94,7 @@ protected class MultivacNLPModel extends Serializable {
       .setNIterations(iterationNum)
       .setInputCols(Array("sentence", "token"))
       .setOutputCol("pos")
-      .setCorpus(path = s"$outputConllFilePath/*", delimiter = "_", options = posOptions)
+      .setCorpus(path = s"$outputConllFilePath", delimiter = "_", options = posOptions)
 
     // Finishers
     val tokenFinisher = new Finisher()
