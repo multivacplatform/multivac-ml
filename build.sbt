@@ -28,7 +28,7 @@ lazy val demo = project
     commonSettings,
     assemblySettings,
     libraryDependencies ++=
-      analyticsDependencies ++
+      sparkDependencies_demo ++
         testDependencies ++
         utilDependencies
   )
@@ -40,14 +40,19 @@ lazy val ml = project
     commonSettings,
     assemblySettings,
     libraryDependencies ++=
-      analyticsDependencies ++
+      sparkDependencies_ml ++
         testDependencies ++
         utilDependencies
   )
 // DEPENDENCIES
-lazy val analyticsDependencies = Seq(
+lazy val sparkDependencies_demo = Seq(
   "org.apache.spark" %% "spark-core" % sparkVer % "provided" withSources(),
   "org.apache.spark" %% "spark-mllib" %sparkVer % "provided" withSources()
+)
+
+lazy val sparkDependencies_ml = Seq(
+  "org.apache.spark" %% "spark-core" % sparkVer,
+  "org.apache.spark" %% "spark-mllib" %sparkVer
 )
 
 lazy val testDependencies = Seq(
