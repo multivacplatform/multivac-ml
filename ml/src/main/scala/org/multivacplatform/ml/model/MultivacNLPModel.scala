@@ -44,14 +44,19 @@ protected class MultivacNLPModel extends Serializable {
     * @param textColName the name of column that contains the text to predict their POS tags
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def train(inputCoNNLFilePath: String, outputConllFilePath: String = defaultConllOutputPath, lang: String = "english", iterationNum: Int = 5, textColName: String): PipelineModel = {
+  def train(inputCoNNLFilePath: String,
+            outputConllFilePath: String = defaultConllOutputPath,
+            lang: String = "english",
+            includeLemma: Boolean = true,
+            iterationNum: Int = 5, textColName: String): PipelineModel = {
 
     val conlluConverterClass = new CoNLLToPOSTextConverter
 
-    val taggedConnlTextDF = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath, "pos_tagged")
-
+    val taggedConnlTextDF = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath, posTaggedColName = "pos_tagged", lemmaTaggedColName = "lemma_tagged")
 
     taggedConnlTextDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(outputConllFilePath)
+    if(includeLemma)
+      taggedConnlTextDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(outputConllFilePath)
     //    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
 
     val documentAssembler = new DocumentAssembler()
