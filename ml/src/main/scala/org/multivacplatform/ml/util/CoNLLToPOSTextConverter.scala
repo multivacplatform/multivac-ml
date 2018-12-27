@@ -1,3 +1,12 @@
+package org.multivacplatform.ml.util
+
+import org.apache.hadoop.io.{LongWritable, Text}
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions._
+
+import scala.collection.mutable.ArrayBuffer
+
 /*
  * MIT License
  *
@@ -22,17 +31,7 @@
  * SOFTWARE.
  */
 
-package org.multivacplatform.ml.util
-
-import org.apache.hadoop.io.{LongWritable, Text}
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
-import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.functions._
-
-import scala.collection.mutable.ArrayBuffer
-
 class CoNLLToPOSTextConverter extends Serializable {
-
 
   /** Convert Conll-U to tagged-based text
     *
@@ -40,7 +39,7 @@ class CoNLLToPOSTextConverter extends Serializable {
     * @param inputCoNNLFilePath input RDD[String] from `spark.sparkContext.textFile`
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def extractingTagsInConllu(inputCoNNLFilePath: String, posTaggedColName: String): DataFrame = {
+  def extractingTagsInConllu(inputCoNNLFilePath: String, posTaggedColName: String, lemmaTaggedColName: String): DataFrame = {
     val spark = ResourceHelper.spark
 
     import spark.implicits._
@@ -60,8 +59,10 @@ class CoNLLToPOSTextConverter extends Serializable {
 
     conllSentencesDF
       .withColumn("pos_tagged", extractPOSTags($"sentence"))
+      .withColumn("lemma_tagged", extractLemmaTags($"sentence"))
       .withColumn(posTaggedColName, concat_ws(" ", $"pos_tagged"))
-      .select(posTaggedColName)
+      .withColumn(lemmaTaggedColName, concat_ws(" ", $"lemma_tagged"))
+      .select(posTaggedColName, lemmaTaggedColName)
 
     /* Old way
         val inputCoNNLFileRDD = spark.sparkContext.textFile(inputCoNNLFilePath)
@@ -83,7 +84,6 @@ class CoNLLToPOSTextConverter extends Serializable {
         val mergedOriginalLemmaUD = labeledOriginalTokens.union(labeledLemmaTokens)
         mergedOriginalLemmaUD
     */
-
   }
 
   private def extractPOSTags = udf { docs: Seq[String] =>
