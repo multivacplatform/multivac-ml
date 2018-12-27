@@ -127,12 +127,12 @@ object TestAccuracy {
       //      .withColumn("SimpleAccuracy", $"True_Positives" / $"TotalTokenMatches")
       .withColumn("Precision", $"True_Positives" / ($"True_Positives" + $"False_Positives"))
       .withColumn("Recall", $"True_Positives" / ($"True_Positives" + $"False_Negatives"))
+      .withColumn("F-Score", (($"Precision" * $"Recall") / ($"Precision" + $"Recall")*2))
     //      .withColumn("accuracy_with_missing_tokens", ($"True_Positives" * 100) / $"TotalWordsInTest")
     //      .withColumn("accuracy_without_missing_tokens", ($"True_Positives" * 100) / $"TotalWordsPredicted")
 
     sumOfAllTags.first()
     sumOfAllTags.show()
-
   }
 
   private def extractTokens= udf { docs: Seq[String] =>
@@ -169,6 +169,7 @@ object TestAccuracy {
     }
     truePositivesTotal
   }
+
   private def calculateFalsePositives= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String]) =>
     var falsePositivesTotal = 0
     val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (k,v)}
@@ -184,6 +185,7 @@ object TestAccuracy {
     }
     falsePositivesTotal
   }
+
   private def calculateFalseNegatives= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String]) =>
     var falseNegatives = 0
     val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (k,v)}
@@ -208,6 +210,7 @@ object TestAccuracy {
     }
     correctTokensCount
   }
+
   private def extractMissingTokens= udf { (testTokens: Seq[String], predictTokens: Seq[String]) =>
     var missingTokensArray = ArrayBuffer[String]()
 
