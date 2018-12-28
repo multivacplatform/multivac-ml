@@ -31,17 +31,21 @@ object TrainEnglishPOS extends App {
 
   val pipleLineModelEnglish = Multivac.nlp.train(
     inputCoNNLFilePath = "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
+    //    lang = "english",
+    //    includeLemma = true,
     iterationNum = 6,
     textColName = "content"
   )
   println("Finished training English UD POS Model")
-  pipleLineModelEnglish.write.overwrite.save("demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT")
+
+  pipleLineModelEnglish.write.overwrite.save("models/nlp/multivac_nlp_pos_UD_English-EWT")
   println("Finished saving English UD POS Model")
+
   println("Start checking accuracy")
   TestAccuracy.posTaggerEnglish_ml(
     spark,
     "./data/ud-treebanks-v2.3/en_ewt-ud-test.conllu",
-    "demo/src/main/resources/models/multivac_nlp_pos_UD_English-EWT"
+    "models/nlp/multivac_nlp_pos_UD_English-EWT"
   )
   spark.close()
 }
