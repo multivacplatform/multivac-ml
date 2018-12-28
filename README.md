@@ -13,21 +13,27 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 
 **Enlgish POS tagger model (UD_English-EWT)**
 
-Precision and Recall scores are made against `en_ewt-ud-test.conllu`
-- Precision: **0.93**
-- Recall: **0.97**
+Accuracy, Precision, Recall and F1-Score against `en_ewt-ud-train.conllu`
 
-| TotalWords | Precision        | Recall           |
-|------------|------------------|------------------|
-| 25097      |    0.936         |        0.973     |
+|Total Tokens| Precision        | Recall           | F1-Score         |
+|------------|------------------|------------------|------------------|
+| 63292      |        0.992     |    0.981         |        0.986     |
 
+Accuracy, Precision, Recall and F1-Score against `en_ewt-ud-test.conllu`
 
-> Precision is "how useful the POS results are", and Recall is "how complete the results are". Precision can be seen as a measure of exactness or quality, whereas recall is a measure of completeness or quantity. https://en.wikipedia.org/wiki/Precision_and_recall
+|Total Tokens| Precision        | Recall           | F1-Score         |
+|------------|------------------|------------------|------------------|
+| 24514      |        0.940     |    0.973         |        0.956     |
+
+> **Precision** is "how useful the POS results are", and **Recall** is "how complete the results are". Precision can be seen as a measure of **exactness or quality**, whereas recall is a measure of **completeness or quantity**. https://en.wikipedia.org/wiki/Precision_and_recall
+
+> The **F1 score** is the harmonic average of the precision and recall, where an F1 score reaches its best value at 1 (perfect precision and recall) and worst at 0. https://en.wikipedia.org/wiki/F1_score
 
 ![Precision](https://wikimedia.org/api/rest_v1/media/math/render/svg/26106935459abe7c266f7b1ebfa2a824b334c807)
 
 ![Recall](https://wikimedia.org/api/rest_v1/media/math/render/svg/4c233366865312bc99c832d1475e152c5074891b)
 
+![F1 Score](https://wikimedia.org/api/rest_v1/media/math/render/svg/057ffc6b4fa80dc1c0e1f2f1f6b598c38cdd7c23)
 
 ## Open Data
 **Multivac ML data**: [https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/WSWU7K](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/WSWU7K)
