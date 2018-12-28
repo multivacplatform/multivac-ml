@@ -24,9 +24,10 @@
 
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, monotonically_increasing_id, sum, udf, when, explode}
+import org.apache.spark.sql.functions.{col, explode, monotonically_increasing_id, sum, udf, when, lit}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
+import org.apache.spark.sql.expressions.UserDefinedFunction
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -109,10 +110,13 @@ object TestAccuracy {
       .withColumn("true_positive", calculateTruePositives($"testTokens", $"testTags", $"predictedTokens", $"predictedTags"))
       .withColumn("false_positive", calculateFalsePositives($"testTokens", $"testTags", $"predictedTokens", $"predictedTags"))
       .withColumn("false_negative", calculateFalseNegatives($"testTokens", $"testTags", $"predictedTokens", $"predictedTags"))
+      .withColumn("PROPN", calculatePrecisionRecallForTags($"testTokens", $"testTags", $"predictedTokens", $"predictedTags", lit("PROPN")))
+      .withColumn("NOUN", calculatePrecisionRecallForTags($"testTokens", $"testTags", $"predictedTokens", $"predictedTags", lit("NOUN")))
       .withColumn("correctPredictToken", tokenMatcher($"testTokens", $"predictedTokens"))
       .withColumn("missingTokens", extractMissingTokens($"testTokens", $"predictedTokens"))
 
     accuracyDF.show()
+    accuracyDF.select("NOUN", "PROPN").show(false)
     accuracyDF.select($"missingTokens", explode($"missingTokens").as("tokens")).groupBy("tokens").count.orderBy($"count".desc).show
 
     val sumOfAllTags = accuracyDF.agg(
@@ -124,12 +128,10 @@ object TestAccuracy {
       sum("false_negative").as("False_Negatives")
       //      sum("missingTokens").as("TotalTokenMisses")
     )
-      //      .withColumn("SimpleAccuracy", $"True_Positives" / $"TotalTokenMatches")
+//      .withColumn("Simple Accuracy", $"True_Positives" / $"TotalTokenMatches") // same as Precision since this is a tag-wise accuracy
       .withColumn("Precision", $"True_Positives" / ($"True_Positives" + $"False_Positives"))
       .withColumn("Recall", $"True_Positives" / ($"True_Positives" + $"False_Negatives"))
-      .withColumn("F-Score", (($"Precision" * $"Recall") / ($"Precision" + $"Recall")*2))
-    //      .withColumn("accuracy_with_missing_tokens", ($"True_Positives" * 100) / $"TotalWordsInTest")
-    //      .withColumn("accuracy_without_missing_tokens", ($"True_Positives" * 100) / $"TotalWordsPredicted")
+      .withColumn("F1-Score", $"Precision" * $"Recall" / ($"Precision" + $"Recall")*2)
 
     sumOfAllTags.first()
     sumOfAllTags.show()
@@ -157,16 +159,45 @@ object TestAccuracy {
     docs.length
   }
 
-  private def calculateTruePositives= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String]) =>
+  private def calculatePrecisionRecallForTags: UserDefinedFunction = udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String], Tag: String) =>
     var truePositivesTotal = 0
+    var falsePositivesTotal = 0
+    var falseNegativesTotal = 0
+    var totalTagCount = 0
+
     val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (v,k)}
     val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (v,k)}
-    for (e <- predictTagsWithTokens) {
-      if (testTagsWithTokens.contains(e)) {
-        truePositivesTotal += 1
+
+    for ((e,i) <- testTagsWithTokens.zipWithIndex) {
+      if(e._1 == Tag){
+        totalTagCount += 1
+        if (predictTagsWithTokens.contains(e)) {
+          truePositivesTotal += 1
+        }
+        //        if (predictTagsWithTokens(i)._1.contains(e._1)) {
+        //          if (!predictTagsWithTokens(i)._2.contains(e._2)) {
+        //            falsePositivesTotal += 1
+        //          }
+        //        } else {
+        //          falseNegativesTotal += 1
+        //        }
       }
-      truePositivesTotal
     }
+    (totalTagCount, truePositivesTotal, falsePositivesTotal, falseNegativesTotal)
+  }
+
+  private def calculateTruePositives= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String]) =>
+    var truePositivesTotal = 0
+    val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (k,v)}
+    val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (k,v)}
+
+    predictTagsWithTokens.collect { case x if testTagsWithTokens.contains(x) => truePositivesTotal += 1 }
+
+//    for (e <- predictTagsWithTokens) {
+//      if (testTagsWithTokens.contains(e)) {
+//        truePositivesTotal += 1
+//      }
+//    }
     truePositivesTotal
   }
 
@@ -175,13 +206,15 @@ object TestAccuracy {
     val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (k,v)}
     val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (k,v)}
 
-    for (e <- testTagsWithTokens) {
-      if (predictTagsWithTokens.exists(_._1 == e._1 )) {
-        if (!(predictTagsWithTokens.find(_._1 == e._1).get._2 == e._2)) {
+    for (e <- predictTagsWithTokens) {
+      if (testTagsWithTokens.exists(_._1 == e._1)) {
+        if (!testTagsWithTokens.contains(e)) {
           falsePositivesTotal += 1
         }
+        //        if (!(testTagsWithTokens.find(_._1 == e._1).get._2 == e._2)) {
+        //          falsePositivesTotal += 1
+        //        }
       }
-      falsePositivesTotal
     }
     falsePositivesTotal
   }
@@ -192,10 +225,9 @@ object TestAccuracy {
     val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (k,v)}
 
     for (e <- testTagsWithTokens) {
-      if (!predictTagsWithTokens.exists(_._1 == e._1 )) {
+      if (!predictTagsWithTokens.exists(_._1 == e._1)) {
         falseNegatives += 1
       }
-      falseNegatives
     }
     falseNegatives
   }
