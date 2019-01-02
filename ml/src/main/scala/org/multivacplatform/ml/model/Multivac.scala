@@ -24,8 +24,10 @@
 
 package org.multivacplatform.ml.model
 
+import org.multivacplatform.ml.nlp.MultivacPOSModel
+
 object Multivac {
 
-  val nlp = new MultivacNLPModel
+  val pos = new MultivacPOSModel
 
 }
