@@ -1,5 +1,3 @@
-import org.multivacplatform.ml.model.Multivac
-
 /*
  * MIT License
  *
@@ -24,12 +22,14 @@ import org.multivacplatform.ml.model.Multivac
  * SOFTWARE.
  */
 
+import org.multivacplatform.ml.model.Multivac
+
 object TrainEnglishPOS extends App {
   println("Start training English UD POS Model")
 
   val spark = SessionBuilder.buildSession()
 
-  val pipleLineModelEnglish = Multivac.nlp.train(
+  val pipleLineModelEnglish = Multivac.pos.train(
     inputCoNNLFilePath = "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
     //    lang = "english",
     //    includeLemma = true,
