@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018. Maziyar Panahi
+ * Copyright (c) 2019. Maziyar Panahi
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,7 @@
 
 package org.multivacplatform.ml.model
 
-import org.multivacplatform.ml.nlp.MultivacPOSModel
-
 object Multivac {
 
-  val pos = new MultivacPOSModel
 
 }
