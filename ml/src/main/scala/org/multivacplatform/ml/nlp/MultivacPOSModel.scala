@@ -29,6 +29,14 @@ import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.multivacplatform.ml.util.ResourceHelper.spark.implicits._
 import org.multivacplatform.ml.util._
+import org.apache.spark.ml.PipelineModel
+import org.apache.spark.ml.param.{IntParam, Param}
+import org.apache.spark.ml.util.{DefaultParamsReadable, Identifiable}
+import org.apache.spark.sql.Dataset
+
+import scala.collection.mutable.{Map => MMap}
+import scala.util.Random
+
 
 class MultivacPOSModel extends Serializable {
 
@@ -36,20 +44,55 @@ class MultivacPOSModel extends Serializable {
   private val applicationId = spark.sparkContext.applicationId
   private val defaultConllOutputPath = s"./data/universal_tags/$applicationId"
 
+  var inputCoNNLFilePath: String = ""
+  var outputConllFilePath: String = defaultConllOutputPath
+  var lang: String = "english"
+  var includeLemma: Boolean = true
+  var iterationCount: Int = 5
+  var inputColName: String = ""
+
+  /** setInputCoNNLFilePath
+    *
+    * @param value path to ConLL file to train POS Model
+    */
+  def setInputCoNNLFilePath(value: String): this.type = { inputCoNNLFilePath = value; this }
+
+  /** setOutputConllFilePath
+    *
+    * @param value output path to write converted CoNLL files `default: ./data/english_universal_tags/$applicationId`
+    */
+  def setOutputConllFilePath(value: String): this.type = { outputConllFilePath = value; this }
+
+  /** setLang
+    *
+    * @param value path to ConLL file to train POS Model
+    */
+  def setLang(value: String): this.type = { lang = value; this }
+
+  /** setIncludeLemma
+    *
+    * @param value path to ConLL file to train POS Model
+    */
+  def setIncludeLemma(value: Boolean): this.type = { includeLemma = value; this }
+
+  /** setIterationCount
+    *
+    * @param value number of iteration to train POS model
+    */
+  def setIterationCount(value: Int): this.type = { iterationCount = value; this }
+
+  /** setInputColName
+    *
+    * @param value the name of column that contains the text to predict their POS tags
+    */
+  def setInputColName(value: String): this.type = { inputColName = value; this }
+
   /** Train
     *
     * @note
-    * @param inputCoNNLFilePath path to ConLL file to train POS Model
-    * @param outputConllFilePath output path to write converted CoNLL files `default: ./data/english_universal_tags/$applicationId`
-    * @param iterationNum number of iteration to train POS model
-    * @param textColName the name of column that contains the text to predict their POS tags
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def train(inputCoNNLFilePath: String,
-            outputConllFilePath: String = defaultConllOutputPath,
-            lang: String = "english",
-            includeLemma: Boolean = true,
-            iterationNum: Int = 5, textColName: String): PipelineModel = {
+  def train(): PipelineModel = {
 
     val conlluConverterClass = new CoNLLToPOSTextConverter
 
@@ -61,7 +104,7 @@ class MultivacPOSModel extends Serializable {
     //    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
 
     val documentAssembler = new DocumentAssembler()
-      .setInputCol(textColName)
+      .setInputCol(inputColName)
       .setOutputCol("document")
 
     val sentenceDetector = new SentenceDetector()
@@ -97,7 +140,7 @@ class MultivacPOSModel extends Serializable {
     // POS tagging
     val posOptions = Map("format" -> "text", "repartition" -> "1")
     val posTagger = new PerceptronApproach()
-      .setNIterations(iterationNum)
+      .setNIterations(iterationCount)
       .setInputCols(Array("sentence", "token"))
       .setOutputCol("pos")
       .setCorpus(
@@ -130,6 +173,6 @@ class MultivacPOSModel extends Serializable {
         posFinisher
       ))
 
-    pipeline.fit(Seq.empty[String].toDF(textColName))
+    pipeline.fit(Seq.empty[String].toDF(inputColName))
   }
 }
