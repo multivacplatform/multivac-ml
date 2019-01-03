@@ -22,20 +22,21 @@
  * SOFTWARE.
  */
 
-import org.multivacplatform.ml.model.Multivac
+import org.multivacplatform.ml.nlp._
 
 object TrainEnglishPOS extends App {
   println("Start training English UD POS Model")
 
   val spark = SessionBuilder.buildSession()
 
-  val pipleLineModelEnglish = Multivac.pos.train(
-    inputCoNNLFilePath = "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
-    //    lang = "english",
-    //    includeLemma = true,
-    iterationNum = 6,
-    textColName = "content"
-  )
+  val pipleLineModelEnglish = new MultivacPOSModel()
+    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu")
+    .setIterationCount(6)
+    .setInputColName("content")
+    .setLang("english")
+    .setIncludeLemma(true)
+    .train()
+
   println("Finished training English UD POS Model")
 
   pipleLineModelEnglish.write.overwrite.save("models/nlp/multivac_nlp_pos_UD_English-EWT")
