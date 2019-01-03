@@ -26,16 +26,10 @@ package org.multivacplatform.ml.nlp
 
 import com.johnsnowlabs.nlp.annotator.{PerceptronApproach, SentenceDetector, Tokenizer}
 import com.johnsnowlabs.nlp.{DocumentAssembler, Finisher}
-import org.apache.spark.ml.{Pipeline, PipelineModel}
+import org.apache.spark.ml.Pipeline
 import org.multivacplatform.ml.util.ResourceHelper.spark.implicits._
 import org.multivacplatform.ml.util._
 import org.apache.spark.ml.PipelineModel
-import org.apache.spark.ml.param.{IntParam, Param}
-import org.apache.spark.ml.util.{DefaultParamsReadable, Identifiable}
-import org.apache.spark.sql.Dataset
-
-import scala.collection.mutable.{Map => MMap}
-import scala.util.Random
 
 
 class MultivacPOSModel extends Serializable {
