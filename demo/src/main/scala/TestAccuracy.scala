@@ -30,8 +30,6 @@ import org.apache.hadoop.io.{LongWritable, Text}
 
 import scala.collection.mutable.ArrayBuffer
 
-case class TagScore(tag: String, truePositive: Int, falsePositive: Int, falseNagetive: Int)
-
 object TestAccuracy {
   /** posTaggerEnglish_ml
     * @note
