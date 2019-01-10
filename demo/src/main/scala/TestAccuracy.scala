@@ -30,6 +30,8 @@ import org.apache.hadoop.io.{LongWritable, Text}
 
 import scala.collection.mutable.ArrayBuffer
 
+case class TagScore(tag: String, truePositive: Int, falsePositive: Int, falseNagetive: Int, support: Int)
+
 object TestAccuracy {
   /** posTaggerEnglish_ml
     * @note
@@ -40,7 +42,9 @@ object TestAccuracy {
     * false negatives:
     *
     */
-  def posTaggerEnglish_ml(spark: SparkSession, pathCoNNLFile: String, modelPath: String): Unit = {
+  def posTaggerEnglish_ml(pathCoNNLFile: String, modelPath: String): Unit = {
+
+    val spark = SessionBuilder.buildSession()
     import spark.implicits._
 
     val conf = new org.apache.hadoop.mapreduce.Job().getConfiguration
@@ -125,70 +129,62 @@ object TestAccuracy {
     X: other
     */
 
-    case class Score(
-                      tag: String,
-                      truePositive: Int,
-                      falsePositive: Int,
-                      falseNagetive: Int,
-                      support: Int
-                    )
     val scorePerTagDF = joinedDF.select("testTokens", "testTags", "predictedTokens", "predictedTags")
-      // // .as[(String, String, String, String)]
       .flatMap(row => {
-      val newColumns: ArrayBuffer[Seq[Score]] = ArrayBuffer()
+        val newColumns: ArrayBuffer[Seq[TagScore]] = ArrayBuffer()
 
-      var metrics: ArrayBuffer[Score] = ArrayBuffer()
+        var metrics: ArrayBuffer[TagScore] = ArrayBuffer()
 
-      val testTagsWithTokens = row.get(0).asInstanceOf[Seq[String]].zip(row.getSeq(1).asInstanceOf[Seq[String]]).map{case (k,v) => (k,v)}
-      val predictTagsWithTokens = row.getSeq(2).asInstanceOf[Seq[String]].zip(row.getSeq(3).asInstanceOf[Seq[String]]).map{case (k,v) => (k,v)}
+        val testTagsWithTokens = row.get(0).asInstanceOf[Seq[String]].zip(row.getSeq(1).asInstanceOf[Seq[String]]).map{case (k,v) => (k,v)}
+        val predictTagsWithTokens = row.getSeq(2).asInstanceOf[Seq[String]].zip(row.getSeq(3).asInstanceOf[Seq[String]]).map{case (k,v) => (k,v)}
 
-      var truePositivesTotal = 0
-      var falsePositivesTotal = 0
-      var falseNegativesTotal = 0
-      var totalTagCount = 0
-      var totalTokenCount = 0
-      var lastMatchIndex = 0
+        var truePositivesTotal = 0
+        var falsePositivesTotal = 0
+        var falseNegativesTotal = 0
+        var totalTagCount = 0
+        var totalTokenCount = 0
+        var lastMatchIndex = 0
 
-      val allUDTags = Seq("ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "SYM", "VERB", "X")
+        val allUDTags = Seq("ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "SYM", "VERB", "X")
 
-      for (tag <- allUDTags) {
-        // Reset counters
-        totalTagCount = 0
-        totalTokenCount = 0
-        truePositivesTotal = 0
-        falsePositivesTotal = 0
-        falseNegativesTotal = 0
-        lastMatchIndex = 0
+        for (tag <- allUDTags) {
+          // Reset counters
+          totalTagCount = 0
+          totalTokenCount = 0
+          truePositivesTotal = 0
+          falsePositivesTotal = 0
+          falseNegativesTotal = 0
+          lastMatchIndex = 0
 
-        totalTokenCount += 1
-        totalTagCount += 1
+          totalTokenCount += 1
+          totalTagCount += 1
 
-        for ((e,i) <- testTagsWithTokens.zipWithIndex) {
-          //  println(e, i)
-          if(e._2 == tag){
-            for ((p,j) <- predictTagsWithTokens.zipWithIndex) {
-              if(i >= lastMatchIndex){
-                if (p == e) {
-                  // increament True Positive for this tag
-                  truePositivesTotal += 1
-                }else if(p._1 == e._1) {
-                  // increament False Positive for this tag
-                  falsePositivesTotal += 1
-                  // increament False Negative for the other tag: punish the tag in the wrong place
-                  metrics += Score(p._2, 0, 0, 1, 0)
+          for ((e,i) <- testTagsWithTokens.zipWithIndex) {
+            //  println(e, i)
+            if(e._2 == tag){
+              for ((p,j) <- predictTagsWithTokens.zipWithIndex) {
+                if(i >= lastMatchIndex){
+                  if (p == e) {
+                    // increament True Positive for this tag
+                    truePositivesTotal += 1
+                  }else if(p._1 == e._1) {
+                    // increament False Positive for this tag
+                    falsePositivesTotal += 1
+                    // increament False Negative for the other tag: punish the tag in the wrong place
+                    metrics += TagScore(p._2, 0, 0, 1, 0)
+                  }
+                  lastMatchIndex = j+1
                 }
-                lastMatchIndex = j+1
               }
             }
           }
+          metrics += TagScore(tag, truePositivesTotal, falsePositivesTotal, falseNegativesTotal, totalTagCount)
+
         }
-        metrics += Score(tag, truePositivesTotal, falsePositivesTotal, falseNegativesTotal, totalTagCount)
 
-      }
-
-      newColumns.append(metrics)
-      newColumns
-    }).toDF("metrics").select(explode($"metrics").as("tagScores"))
+        newColumns.append(metrics)
+        newColumns
+      }).toDF("metrics").select(explode($"metrics").as("tagScores"))
       .groupBy($"tagScores.tag")
       .agg(
         sum($"tagScores.truePositive").as("tp_score"),
