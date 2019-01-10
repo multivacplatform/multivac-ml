@@ -29,22 +29,21 @@ object TrainEnglishPOS extends App {
 
   val spark = SessionBuilder.buildSession()
 
-  val pipleLineModelEnglish = new MultivacPOSModel()
-    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu")
-    .setIterationCount(6)
-    .setInputColName("content")
-    .setLang("english")
-    .setIncludeLemma(true)
-    .train()
-
-  println("Finished training English UD POS Model")
-
-  pipleLineModelEnglish.write.overwrite.save("models/nlp/multivac_nlp_pos_UD_English-EWT")
-  println("Finished saving English UD POS Model")
+//  val pipleLineModelEnglish = new MultivacPOSModel()
+//    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu")
+//    .setIterationCount(6)
+//    .setInputColName("content")
+//    .setLang("english")
+//    .setIncludeLemma(true)
+//    .train()
+//
+//  println("Finished training English UD POS Model")
+//
+//  pipleLineModelEnglish.write.overwrite.save("models/nlp/multivac_nlp_pos_UD_English-EWT")
+//  println("Finished saving English UD POS Model")
 
   println("Start checking accuracy")
-  TestAccuracy.posTaggerEnglish_ml(
-    spark,
+  TestAccuracy.evaluatePOSModel(
     "./data/ud-treebanks-v2.3/en_ewt-ud-test.conllu",
     "models/nlp/multivac_nlp_pos_UD_English-EWT"
   )
