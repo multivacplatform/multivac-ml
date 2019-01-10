@@ -24,7 +24,7 @@
 
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, explode, monotonically_increasing_id, sum, udf, avg}
+import org.apache.spark.sql.functions.{avg, col, explode, monotonically_increasing_id, sum, udf, round}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
 
@@ -189,17 +189,15 @@ object TestAccuracy {
         sum($"tagScores.truePositive").as("tp_score"),
         sum($"tagScores.falsePositive").as("fp_score"),
         sum($"tagScores.falseNagetive").as("fn_score")
-//        sum($"tagScores.support").as("support")
       )
-      .withColumn("Precision", $"tp_score" / ($"tp_score" + $"fp_score"))
-      .withColumn("Recall", $"tp_score" / ($"tp_score" + $"fn_score"))
-      .withColumn("F1-Score", $"Precision" * $"Recall" / ($"Precision" + $"Recall")*2)
+      .withColumn("Precision", round($"tp_score" / ($"tp_score" + $"fp_score"), 3))
+      .withColumn("Recall", round($"tp_score" / ($"tp_score" + $"fn_score"), 3))
+      .withColumn("F1-Score", round($"Precision" * $"Recall" / ($"Precision" + $"Recall")*2, 3))
       .orderBy($"Precision".desc)
 
     scorePerTagDF.show(false)
 
     scorePerTagDF.agg(
-//      sum($"support").as("total"),
       avg($"Precision").as("Precision"),
       avg($"Recall").as("Recall"),
       avg($"F1-Score").as("F1-Score")
