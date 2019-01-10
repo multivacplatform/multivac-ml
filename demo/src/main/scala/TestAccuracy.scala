@@ -30,7 +30,7 @@ import org.apache.hadoop.io.{LongWritable, Text}
 
 import scala.collection.mutable.ArrayBuffer
 
-case class TagScore(tag: String, truePositive: Int, falsePositive: Int, falseNagetive: Int, support: Int)
+case class TagScore(tag: String, truePositive: Int, falsePositive: Int, falseNagetive: Int)
 
 object TestAccuracy {
   /** posTaggerEnglish_ml
@@ -42,7 +42,7 @@ object TestAccuracy {
     * false negatives:
     *
     */
-  def posTaggerEnglish_ml(pathCoNNLFile: String, modelPath: String): Unit = {
+  def evaluatePOSModel(pathCoNNLFile: String, modelPath: String): Unit = {
 
     val spark = SessionBuilder.buildSession()
     import spark.implicits._
@@ -167,19 +167,20 @@ object TestAccuracy {
                   if (p == e) {
                     // increament True Positive for this tag
                     truePositivesTotal += 1
+                    metrics += TagScore(tag, 1, 0, 0)
                   }else if(p._1 == e._1) {
                     // increament False Positive for this tag
                     falsePositivesTotal += 1
+                    metrics += TagScore(tag, 0, 1, 0)
                     // increament False Negative for the other tag: punish the tag in the wrong place
-                    metrics += TagScore(p._2, 0, 0, 1, 0)
+                    metrics += TagScore(p._2, 0, 0, 1)
                   }
                   lastMatchIndex = j+1
                 }
               }
             }
           }
-          metrics += TagScore(tag, truePositivesTotal, falsePositivesTotal, falseNegativesTotal, totalTagCount)
-
+          //          metrics += TagScore(tag, truePositivesTotal, falsePositivesTotal, falseNegativesTotal)
         }
 
         newColumns.append(metrics)
@@ -189,8 +190,8 @@ object TestAccuracy {
       .agg(
         sum($"tagScores.truePositive").as("tp_score"),
         sum($"tagScores.falsePositive").as("fp_score"),
-        sum($"tagScores.falseNagetive").as("fn_score"),
-        sum($"tagScores.support").as("support")
+        sum($"tagScores.falseNagetive").as("fn_score")
+//        sum($"tagScores.support").as("support")
       )
       .withColumn("Precision", $"tp_score" / ($"tp_score" + $"fp_score"))
       .withColumn("Recall", $"tp_score" / ($"tp_score" + $"fn_score"))
@@ -200,12 +201,11 @@ object TestAccuracy {
     scorePerTagDF.show(false)
 
     scorePerTagDF.agg(
-      sum($"support").as("total"),
+//      sum($"support").as("total"),
       avg($"Precision").as("Precision"),
       avg($"Recall").as("Recall"),
       avg($"F1-Score").as("F1-Score")
     ).show(false)
-
   }
 
   private def extractTokens= udf { docs: Seq[String] =>
