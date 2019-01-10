@@ -24,10 +24,9 @@
 
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, explode, monotonically_increasing_id, sum, udf, when, lit, avg}
+import org.apache.spark.sql.functions.{col, explode, monotonically_increasing_id, sum, udf, avg}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
-import org.apache.spark.sql.expressions.UserDefinedFunction
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -233,100 +232,5 @@ object TestAccuracy {
 
   private def calLengthOfArray= udf { docs: Seq[String] =>
     docs.length
-  }
-
-  private def calculatePrecisionRecallForTags: UserDefinedFunction = udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String], Tag: String) =>
-    var truePositivesTotal = 0
-    var falsePositivesTotal = 0
-    var falseNegativesTotal = 0
-    var totalTagCount = 0
-
-    val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (v,k)}
-    val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (v,k)}
-
-    for ((e,i) <- testTagsWithTokens.zipWithIndex) {
-      if(e._1 == Tag){
-        totalTagCount += 1
-        if (predictTagsWithTokens.contains(e)) {
-          truePositivesTotal += 1
-        }
-        //        if (predictTagsWithTokens(i)._1.contains(e._1)) {
-        //          if (!predictTagsWithTokens(i)._2.contains(e._2)) {
-        //            falsePositivesTotal += 1
-        //          }
-        //        } else {
-        //          falseNegativesTotal += 1
-        //        }
-      }
-    }
-    (totalTagCount, truePositivesTotal, falsePositivesTotal, falseNegativesTotal)
-  }
-
-  private def calculateTruePositives= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String]) =>
-    var truePositivesTotal = 0
-    val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (k,v)}
-    val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (k,v)}
-
-    predictTagsWithTokens.collect { case x if testTagsWithTokens.contains(x) => truePositivesTotal += 1 }
-
-    //    for (e <- predictTagsWithTokens) {
-    //      if (testTagsWithTokens.contains(e)) {
-    //        truePositivesTotal += 1
-    //      }
-    //    }
-    truePositivesTotal
-  }
-
-  private def calculateFalsePositives= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String]) =>
-    var falsePositivesTotal = 0
-    val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (k,v)}
-    val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (k,v)}
-
-    for (e <- predictTagsWithTokens) {
-      if (testTagsWithTokens.exists(_._1 == e._1)) {
-        if (!testTagsWithTokens.contains(e)) {
-          falsePositivesTotal += 1
-        }
-        //        if (!(testTagsWithTokens.find(_._1 == e._1).get._2 == e._2)) {
-        //          falsePositivesTotal += 1
-        //        }
-      }
-    }
-    falsePositivesTotal
-  }
-
-  private def calculateFalseNegatives= udf { (testTokens: Seq[String], testTags: Seq[String], predictTokens: Seq[String], predictTags: Seq[String]) =>
-    var falseNegatives = 0
-    val testTagsWithTokens = testTokens.zip(testTags).map{case (k,v) => (k,v)}
-    val predictTagsWithTokens = predictTokens.zip(predictTags).map{case (k,v) => (k,v)}
-
-    for (e <- testTagsWithTokens) {
-      if (!predictTagsWithTokens.exists(_._1 == e._1)) {
-        falseNegatives += 1
-      }
-    }
-    falseNegatives
-  }
-
-  private def tokenMatcher= udf { (testTokens: Seq[String], predictTokens: Seq[String]) =>
-    var correctTokensCount = 0
-    for (e <- predictTokens) {
-      if (testTokens.contains(e)) {
-        correctTokensCount+=1
-      }
-      correctTokensCount
-    }
-    correctTokensCount
-  }
-
-  private def extractMissingTokens= udf { (testTokens: Seq[String], predictTokens: Seq[String]) =>
-    var missingTokensArray = ArrayBuffer[String]()
-
-    for (e <- testTokens) {
-      if (!predictTokens.contains(e)) {
-        missingTokensArray += e
-      }
-    }
-    missingTokensArray
   }
 }
