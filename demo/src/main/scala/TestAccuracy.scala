@@ -23,7 +23,7 @@
  */
 
 import org.apache.spark.ml.PipelineModel
-import org.apache.spark.sql.functions.{avg, col, explode, monotonically_increasing_id, sum, udf, round}
+import org.apache.spark.sql.functions.{avg, col, explode, monotonically_increasing_id, sum, udf, round, when}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
 
@@ -99,11 +99,14 @@ object TestAccuracy {
       .withColumn("testTokensLength", calLengthOfArray($"testTokens"))
       .withColumn("testTagsLength", calLengthOfArray($"testTags"))
       .withColumn("tokensDiffFromTest", $"testTokensLength" - $"predictedTokensLength")
+      .withColumn("missingTokens", extractMissingTokens($"testTokens", $"predictedTokens"))
       .withColumn("equalTags", col("predictedTagsLength") === col("testTagsLength"))
 
     joinedDF.show
     joinedDF.filter("id=4").show(false)
     joinedDF.printSchema()
+    joinedDF.select($"missingTokens", explode($"missingTokens").as("tokens")).groupBy("tokens").count.orderBy($"count".desc).show
+
 
     /*
     ADJ: adjective
@@ -222,6 +225,17 @@ object TestAccuracy {
 
   private def calLengthOfArray= udf { docs: Seq[String] =>
     docs.length
+  }
+
+  private def extractMissingTokens= udf { (testTokens: Seq[String], predictTokens: Seq[String]) =>
+    var missingTokensArray = ArrayBuffer[String]()
+
+    for (e <- testTokens) {
+      if (!predictTokens.contains(e)) {
+        missingTokensArray += e
+      }
+    }
+    missingTokensArray
   }
 
 }
