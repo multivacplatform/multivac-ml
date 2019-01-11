@@ -23,7 +23,7 @@
  */
 
 import org.apache.spark.ml.PipelineModel
-import org.apache.spark.sql.functions.{avg, col, explode, monotonically_increasing_id, sum, udf, round, when}
+import org.apache.spark.sql.functions.{avg, col, explode, monotonically_increasing_id, sum, udf, round}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
 
