@@ -23,8 +23,7 @@
  */
 
 import org.apache.spark.ml.PipelineModel
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{avg, col, explode, monotonically_increasing_id, sum, udf, round}
+import org.apache.spark.sql.functions.{avg, col, explode, monotonically_increasing_id, sum, udf, round, when}
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
 
@@ -100,7 +99,6 @@ object TestAccuracy {
       .withColumn("testTokensLength", calLengthOfArray($"testTokens"))
       .withColumn("testTagsLength", calLengthOfArray($"testTags"))
       .withColumn("tokensDiffFromTest", $"testTokensLength" - $"predictedTokensLength")
-      //      .withColumn("missingTokens",  when($"tokensDiffFromTest" < 0, -$"tokensDiffFromTest").otherwise($"tokensDiffFromTest"))
       .withColumn("equalTags", col("predictedTagsLength") === col("testTagsLength"))
 
     joinedDF.show
@@ -225,4 +223,5 @@ object TestAccuracy {
   private def calLengthOfArray= udf { docs: Seq[String] =>
     docs.length
   }
+
 }
