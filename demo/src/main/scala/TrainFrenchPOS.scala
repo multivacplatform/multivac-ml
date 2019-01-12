@@ -22,6 +22,25 @@
  * SOFTWARE.
  */
 
-object TrainFrenchPOS {
+import org.multivacplatform.ml.nlp.MultivacPOSModel
 
+object TrainFrenchPOS extends App {
+  val spark = SessionBuilder.buildSession()
+
+  /*val pipleLineModelFrench = new MultivacPOSModel()
+    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/fr_gsd-ud-train.conllu")
+    .setIterationCount(6)
+    .setInputColName("content")
+    .setLang("french")
+    .setIncludeLemma(true)
+    .train()
+
+  pipleLineModelFrench.write.overwrite.save("models/nlp/multivac_nlp_pos_UD_French-GSD")
+  */
+  TestAccuracy.evaluatePOSModel(
+    "./data/ud-treebanks-v2.3/fr_gsd-ud-train.conllu",
+    "models/nlp/multivac_nlp_pos_UD_French-GSD"
+  )
+
+  spark.close()
 }
