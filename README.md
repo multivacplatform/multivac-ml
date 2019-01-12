@@ -65,7 +65,7 @@ Accuracy, Precision, Recall and F1-Score against `en_ewt-ud-test.conllu`
 
 |Tokens |Precision  |Recall |F1-Score |
 |-------|-----------|-------|---------|
-| 24514 |0.89       |0.93   |0.90     |
+| 24514 |0.90       |0.93   |0.90     |
 
 
 
