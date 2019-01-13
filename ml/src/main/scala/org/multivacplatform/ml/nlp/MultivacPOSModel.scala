@@ -118,17 +118,7 @@ class MultivacPOSModel extends Serializable {
           .addInfixPattern("((?:\\p{L}\\.)+)")
           .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
           .addInfixPattern("([\\p{L}\\w]+)")
-      case "french" =>
-        tokenizer
-          .setInputCols(Array("sentence"))
-          .setOutputCol("token")
-          .addInfixPattern("(\\w+)([^\\s\\p{L}]{1})+(\\w+)")
-          .addInfixPattern("(\\w+'{1})(\\w+)") // (l',air) instead of (l, 'air)
-          .addInfixPattern("(\\p{L}+)(n't\\b)")
-          .addInfixPattern("((?:\\p{L}\\.)+)")
-          .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
-          .addInfixPattern("([\\p{L}\\w]+)")
-      case "persian" =>
+      case "french" | "persian" =>
         tokenizer
           .setInputCols(Array("sentence"))
           .setOutputCol("token")
