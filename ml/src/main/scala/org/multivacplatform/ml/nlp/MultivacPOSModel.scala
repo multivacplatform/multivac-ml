@@ -40,7 +40,7 @@ class MultivacPOSModel extends Serializable {
 
   var inputCoNNLFilePath: String = ""
   var outputConllFilePath: String = defaultConllOutputPath
-  var lang: String = "english"
+  var lang: String = ""
   var includeLemma: Boolean = true
   var iterationCount: Int = 5
   var inputColName: String = ""
@@ -129,6 +129,10 @@ class MultivacPOSModel extends Serializable {
           .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
           .addInfixPattern("([\\p{L}\\w]+)")
           .setCompositeTokensPatterns(Array("e-mail"))
+      case _ =>
+        tokenizer
+          .setInputCols(Array("sentence"))
+          .setOutputCol("token")
     }
 
     // POS tagging
