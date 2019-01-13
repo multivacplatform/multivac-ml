@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import com.johnsnowlabs.nlp.annotator.PerceptronModel
 import org.multivacplatform.ml.nlp._
 
 object TrainEnglishPOS extends App {
@@ -39,13 +40,15 @@ object TrainEnglishPOS extends App {
 
   println("Finished training English UD POS Model")
 
-  pipleLineModelEnglish.write.overwrite.save("models/nlp/multivac_nlp_pos_UD_English-EWT")
-  println("Finished saving English UD POS Model")
+  pipleLineModelEnglish.write.overwrite.save("models/nlp/pipeline-pos-en_ewt-ud-1.8.0")
+  pipleLineModelEnglish.stages(3).asInstanceOf[PerceptronModel].write.overwrite.save("models/nlp/pos-en_ewt-ud-1.8.0")
+
+  println("Finished saving English UD POS Model and Pipeline")
 
   println("Start checking accuracy")
   TestAccuracy.evaluatePOSModel(
     "./data/ud-treebanks-v2.3/en_ewt-ud-test.conllu",
-    "models/nlp/multivac_nlp_pos_UD_English-EWT"
+    "models/nlp/pipeline-pos-en_ewt-ud-1.8.0"
   )
   spark.close()
 }
