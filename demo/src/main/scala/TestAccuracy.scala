@@ -28,6 +28,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
 import org.apache.hadoop.io.{LongWritable, Text}
 
 import scala.collection.mutable.ArrayBuffer
+import scala.util.control.Breaks._
 
 object TestAccuracy {
   /** posTaggerEnglish_ml
@@ -107,7 +108,6 @@ object TestAccuracy {
     joinedDF.printSchema()
     joinedDF.select($"missingTokens", explode($"missingTokens").as("tokens")).groupBy("tokens").count.orderBy($"count".desc).show
 
-
     /*
     ADJ: adjective
     ADP: adposition
@@ -135,53 +135,45 @@ object TestAccuracy {
         var metrics: ArrayBuffer[TagScore] = ArrayBuffer()
 
         val testTagsWithTokens = row.get(0).asInstanceOf[Seq[String]].zip(row.getSeq(1).asInstanceOf[Seq[String]]).map{case (k,v) => (k,v)}
-        val predictTagsWithTokens = row.getSeq(2).asInstanceOf[Seq[String]].zip(row.getSeq(3).asInstanceOf[Seq[String]]).map{case (k,v) => (k,v)}
+        var predictTagsWithTokens = row.getSeq(2).asInstanceOf[Seq[String]].zip(row.getSeq(3).asInstanceOf[Seq[String]]).map{case (k,v) => (k,v)}
 
-        var truePositivesTotal = 0
-        var falsePositivesTotal = 0
-        var falseNegativesTotal = 0
         var totalTagCount = 0
         var totalTokenCount = 0
         var lastMatchIndex = 0
 
-        val allUDTags = Seq("ADJ", "ADP", "ADV", "AUX", "CCONJ", "DET", "INTJ", "NOUN", "NUM", "PART", "PRON", "PROPN", "PUNCT", "SCONJ", "SYM", "VERB", "X")
+        // Reset counters
+        totalTagCount = 0
+        totalTokenCount = 0
+        lastMatchIndex = 0
 
-        for (tag <- allUDTags) {
-          // Reset counters
-          totalTagCount = 0
-          totalTokenCount = 0
-          truePositivesTotal = 0
-          falsePositivesTotal = 0
-          falseNegativesTotal = 0
+        totalTokenCount += 1
+        totalTagCount += 1
+
+        for ((t,i) <- testTagsWithTokens.zipWithIndex) {
           lastMatchIndex = 0
-
-          totalTokenCount += 1
-          totalTagCount += 1
-
-          for ((e,i) <- testTagsWithTokens.zipWithIndex) {
-            //  println(e, i)
-            if(e._2 == tag){
-              for ((p,j) <- predictTagsWithTokens.zipWithIndex) {
-                if(i >= lastMatchIndex){
-                  if (p == e) {
-                    // increament True Positive for this tag
-                    truePositivesTotal += 1
-                    metrics += TagScore(tag, 1, 0, 0)
-                  }else if(p._1 == e._1) {
-                    // increament False Positive for this tag
-                    falsePositivesTotal += 1
-                    metrics += TagScore(tag, 0, 1, 0)
-                    // increament False Negative for the other tag: punish the tag in the wrong place
-                    metrics += TagScore(p._2, 0, 0, 1)
-                  }
-                  lastMatchIndex = j+1
-                }
+          for ((p,j) <- predictTagsWithTokens.zipWithIndex) {
+            //            if(j >= lastMatchIndex){
+            breakable {
+              if (t == p) {
+                // increament True Positive for this tag
+                metrics += TagScore(t._2, 1, 0, 0, 1)
+                predictTagsWithTokens = predictTagsWithTokens.zipWithIndex.filter(_._2 != j).map(_._1)
+                break()
+              } else if (t._1 == p._1) {
+                // increament False Positive for this tag
+                metrics += TagScore(t._2, 0, 1, 0, 1)
+                // increament False Negative for the other tag: punish the tag in the wrong place
+                metrics += TagScore(p._2, 0, 0, 1, 1)
+                predictTagsWithTokens = predictTagsWithTokens.zipWithIndex.filter(_._2 != j).map(_._1)
+                break()
               }
+              lastMatchIndex += 1
+              if(lastMatchIndex >= 2) break()
             }
+            //              lastMatchIndex = j+1
+            //            }
           }
-          //          metrics += TagScore(tag, truePositivesTotal, falsePositivesTotal, falseNegativesTotal)
         }
-
         newColumns.append(metrics)
         newColumns
       }).toDF("metrics").select(explode($"metrics").as("tagScores"))
@@ -189,7 +181,8 @@ object TestAccuracy {
       .agg(
         sum($"tagScores.truePositive").as("tp_score"),
         sum($"tagScores.falsePositive").as("fp_score"),
-        sum($"tagScores.falseNagetive").as("fn_score")
+        sum($"tagScores.falseNagetive").as("fn_score"),
+        sum($"tagScores.support").as("support")
       )
       .withColumn("Precision", round($"tp_score" / ($"tp_score" + $"fp_score"), 3))
       .withColumn("Recall", round($"tp_score" / ($"tp_score" + $"fn_score"), 3))
@@ -203,6 +196,7 @@ object TestAccuracy {
       avg($"Recall").as("Recall"),
       avg($"F1-Score").as("F1-Score")
     ).show(false)
+
   }
 
   private def extractTokens= udf { docs: Seq[String] =>
