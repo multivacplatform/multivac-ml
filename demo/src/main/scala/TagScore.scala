@@ -22,4 +22,4 @@
  * SOFTWARE.
  */
 
-case class TagScore(tag: String, truePositive: Int, falsePositive: Int, falseNagetive: Int)
+case class TagScore(tag: String, truePositive: Int, falsePositive: Int, falseNagetive: Int, support: Int)
