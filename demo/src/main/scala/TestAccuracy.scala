@@ -45,6 +45,8 @@ object TestAccuracy {
     val spark = SessionBuilder.buildSession()
     import spark.implicits._
 
+    val debugIsOn = true
+
     val conf = new org.apache.hadoop.mapreduce.Job().getConfiguration
     conf.set("textinputformat.record.delimiter", "\n\n")
 
@@ -62,9 +64,12 @@ object TestAccuracy {
       .withColumn("testTags", extractTags($"sentence"))
       .drop("sentence")
 
-    println("Count of CoNLL extracted sentence from tokens_tags: ", testTokensTagsDF.count())
-    testTokensTagsDF.filter("id=4").show(false)
-    testTokensTagsDF.show
+    if(debugIsOn){
+      println("Count of CoNLL extracted sentence from tokens_tags: ", testTokensTagsDF.count())
+      testTokensTagsDF.filter("id=4").show(false)
+      testTokensTagsDF.show
+    }
+
 
     // Convert CoNLL-U to Text for training the test Dataframe
     // This DataFrame will be used for testing the POS Model (SentenceDetector, Tokenizer, and POS tagger)
@@ -76,11 +81,12 @@ object TestAccuracy {
       .toDF("content")
       .withColumn("id", monotonically_increasing_id)
 
-    println("Count of CoNLL extracted sentences from text DF: ", testSentencesDF.count())
-    testSentencesDF.filter("id=4").show(false)
-    testSentencesDF.show
-    // check if the number of sentences from tokens is equal the number of sentences from the text
-
+    if(debugIsOn) {
+      println("Count of CoNLL extracted sentences from text DF: ", testSentencesDF.count())
+      testSentencesDF.filter("id=4").show(false)
+      testSentencesDF.show
+      // check if the number of sentences from tokens is equal the number of sentences from the text
+    }
     //Load pre-trained pos model
     val pipeLinePOSTaggerModel = PipelineModel.read.load(modelPath)
 
@@ -90,9 +96,11 @@ object TestAccuracy {
         $"token.result".alias("predictedTokens"),
         $"pos.result".alias("predictedTags")
       )
-    println("Count of trained sentences DF: ", manualPipelineDF.count())
-    manualPipelineDF.filter("id=4").show(false)
-    manualPipelineDF.show
+    if(debugIsOn) {
+      println("Count of trained sentences DF: ", manualPipelineDF.count())
+      manualPipelineDF.filter("id=4").show(false)
+      manualPipelineDF.show
+    }
     val joinedDF = manualPipelineDF
       .join(testTokensTagsDF, Seq("id"))
       .withColumn("predictedTokensLength", calLengthOfArray($"predictedTokens"))
@@ -103,11 +111,12 @@ object TestAccuracy {
       .withColumn("missingTokens", extractMissingTokens($"testTokens", $"predictedTokens"))
       .withColumn("equalTags", col("predictedTagsLength") === col("testTagsLength"))
 
-    joinedDF.show
-    joinedDF.filter("id=4").show(false)
-    joinedDF.printSchema()
-    joinedDF.select($"missingTokens", explode($"missingTokens").as("tokens")).groupBy("tokens").count.orderBy($"count".desc).show
-
+    if(debugIsOn) {
+      joinedDF.show
+      joinedDF.filter("id=4").show(false)
+      joinedDF.printSchema()
+      joinedDF.select($"missingTokens", explode($"missingTokens").as("tokens")).groupBy("tokens").count.orderBy($"count".desc).show
+    }
     /*
     ADJ: adjective
     ADP: adposition
@@ -168,15 +177,17 @@ object TestAccuracy {
                 break()
               }
               lastMatchIndex += 1
-              if(lastMatchIndex >= 2) break()
+              if(lastMatchIndex >= 3) break() // after 2 tokens stop loking
             }
-            //              lastMatchIndex = j+1
-            //            }
           }
         }
         newColumns.append(metrics)
         newColumns
-      }).toDF("metrics").select(explode($"metrics").as("tagScores"))
+      }).toDF("metrics")
+      .select(explode($"metrics").as("tagScores"))
+      //   .filter($"tagScores.tag" =!= "_")
+      //   .filter($"tagScores.tag" =!= "X")
+      //   .filter($"tagScores.tag" =!= "INTJ")
       .groupBy($"tagScores.tag")
       .agg(
         sum($"tagScores.truePositive").as("tp_score"),
@@ -192,11 +203,11 @@ object TestAccuracy {
     scorePerTagDF.show(false)
 
     scorePerTagDF.agg(
+      sum($"support").as("Support"),
       avg($"Precision").as("Precision"),
       avg($"Recall").as("Recall"),
       avg($"F1-Score").as("F1-Score")
     ).show(false)
-
   }
 
   private def extractTokens= udf { docs: Seq[String] =>
