@@ -33,14 +33,38 @@ import scala.collection.mutable.ArrayBuffer
 
 class CoNLLToPOSTextConverter extends Serializable {
 
+  private val spark = ResourceHelper.spark
+
+  private var inputCoNNLFilePath: String = ""
+  private var posTaggedColName: String = "pos"
+  private var lemmaTaggedColName: String = "lemma"
+
+  /** setInputCoNNLFilePath
+    *
+    * @param value path to ConLL file to train POS Model
+    */
+  def setInputCoNNLFilePath(value: String): this.type = { inputCoNNLFilePath = value; this }
+
+  /** setPosColName
+    *
+    * @param value path to ConLL file to train POS Model
+    */
+  def setPosColName(value: String): this.type = { posTaggedColName = value; this }
+
+  /** setlemmaColName
+    *
+    * @param value path to ConLL file to train POS Model
+    */
+  def setlemmaColName(value: String): this.type = { lemmaTaggedColName = value; this }
+
+
+
   /** Convert Conll-U to tagged-based text
     *
     * @note
-    * @param inputCoNNLFilePath input RDD[String] from `spark.sparkContext.textFile`
     * @return Array[String] to be saved for training `Spark-NLP`
     */
-  def extractingTagsInConllu(inputCoNNLFilePath: String, posTaggedColName: String, lemmaTaggedColName: String): DataFrame = {
-    val spark = ResourceHelper.spark
+  def transform(): DataFrame = {
 
     import spark.implicits._
 
