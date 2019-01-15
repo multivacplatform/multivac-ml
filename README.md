@@ -13,10 +13,38 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 
 **Enlgish POS tagger model (UD_English-EWT)**
 
-Accuracy, Precision, Recall and F1-Score against `en_ewt-ud-train.conllu`
+Precision, Recall and F1-Score against `en_ewt-ud-test.conllu`
 
-|tag  |tp_score|fp_score|fn_score|Precision         |Recall            |F1-Score          |
-|-----|--------|--------|--------|------------------|------------------|------------------|
+|tag  |tp_score|fp_score|fn_score|support | Precision          |Recall            |F1-Score          |
+|-----|--------|--------|--------|-------|-----------|------------------|------------------|
+|PUNCT|3409    |6       |5       |3420   |0.998    |0.999 |0.998   |
+|CCONJ|760     |4       |6       |770    |0.995    |0.992 |0.993   |
+|DET  |2262    |22      |18      |2302   |0.99     |0.992 |0.991   |
+|PRON |2184    |32      |36      |2252   |0.986    |0.984 |0.985   |
+|AUX  |1386    |36      |66      |1488   |0.975    |0.955 |0.965   |
+|ADP  |2009    |89      |179     |2277   |0.958    |0.918 |0.938   |
+|NUM  |407     |21      |29      |457    |0.951    |0.933 |0.942   |
+|SYM  |42      |3       |4       |49     |0.933    |0.913 |0.923   |
+|VERB |2264    |166     |156     |2586   |0.932    |0.936 |0.934   |
+|NOUN |3359    |328     |358     |4045   |0.911    |0.904 |0.907   |
+|PART |640     |70      |53      |763    |0.901    |0.924 |0.912   |
+|ADV  |1050    |131     |86      |1267   |0.889    |0.924 |0.906   |
+|ADJ  |1358    |175     |132     |1665   |0.886    |0.911 |0.898   |
+|INTJ |103     |17      |4       |124    |0.858    |0.963 |0.907   |
+|PROPN|1572    |268     |293     |2133   |0.854    |0.843 |0.848   |
+|SCONJ|314     |68      |37      |419    |0.822    |0.895 |0.857   |
+|X    |43      |38      |12      |93     |0.531    |0.782 |0.633   |
+
+
+|Tokens |Precision  |Recall |F1-Score |
+|-------|-----------|-------|---------|
+| 25831 |0.91       |0.94   |0.92     |
+
+
+Precision, Recall and F1-Score against `en_ewt-ud-train.conllu`
+
+|tag  |tp_score|fp_score|fn_score|support |Precision         |Recall            |F1-Score          |
+|-----|--------|--------|--------|---------|---------|------------------|------------------|
 |PUNCT|9265    |2       |13      |1.0      |0.999 |0.999   |
 |NUM  |1006    |2       |5       |0.998    |0.995 |0.996   |
 |CCONJ|2233    |5       |11      |0.998    |0.995 |0.996   |
@@ -38,36 +66,7 @@ Accuracy, Precision, Recall and F1-Score against `en_ewt-ud-train.conllu`
 
 |Tokens |Precision  |Recall |F1-Score |
 |-------|-----------|-------|---------|
-| 63292 |0.96       |0.97   |0.97     |
-
-Accuracy, Precision, Recall and F1-Score against `en_ewt-ud-test.conllu`
-
-|tag  |tp_score|fp_score|fn_score|Precision          |Recall            |F1-Score          |
-|-----|--------|--------|--------|-------------------|------------------|------------------|
-|PUNCT|3515    |2       |6       |0.999    |0.998 |0.998   |
-|CCONJ|812     |4       |5       |0.995    |0.994 |0.994   |
-|DET  |2399    |24      |23      |0.99     |0.991 |0.99    |
-|PRON |2245    |30      |38      |0.987    |0.983 |0.985   |
-|AUX  |1456    |37      |72      |0.975    |0.953 |0.964   |
-|PART |634     |28      |97      |0.958    |0.867 |0.91    |
-|NUM  |384     |22      |17      |0.946    |0.958 |0.952   |
-|VERB |2399    |166     |155     |0.935    |0.939 |0.937   |
-|ADP  |2039    |141     |138     |0.935    |0.937 |0.936   |
-|NOUN |3560    |313     |420     |0.919    |0.894 |0.906   |
-|SYM  |34      |4       |1       |0.895    |0.971 |0.931   |
-|ADV  |1064    |134     |93      |0.888    |0.92  |0.904   |
-|ADJ  |1436    |211     |166     |0.872    |0.896 |0.884   |
-|PROPN|1626    |313     |288     |0.839    |0.85  |0.844   |
-|SCONJ|314     |72      |40      |0.813    |0.887 |0.848   |
-|INTJ |94      |24      |5       |0.797    |0.949 |0.866   |
-|X    |36      |47      |8       |0.434    |0.818 |0.567   |
-
-
-|Tokens |Precision  |Recall |F1-Score |
-|-------|-----------|-------|---------|
-| 24514 |0.90       |0.93   |0.90     |
-
-
+| 63785 |0.98       |0.97   |0.97     |
 
 > **Precision** is "how useful the POS results are", and **Recall** is "how complete the results are". Precision can be seen as a measure of **exactness or quality**, whereas recall is a measure of **completeness or quantity**. https://en.wikipedia.org/wiki/Precision_and_recall
 
