@@ -26,7 +26,7 @@ package org.multivacplatform.nlp.model
 
 import org.apache.spark.sql.Row
 import org.multivacplatform.ml.nlp.MultivacPOSModel
-import org.multivacplatform.ml.util.ResourceHelper
+import org.multivacplatform.ml.util.{CoNLLToPOSTextConverter, ResourceHelper}
 import org.scalatest.FlatSpec
 
 trait POSTaggerModelBehavior { this: FlatSpec =>
@@ -37,12 +37,25 @@ trait POSTaggerModelBehavior { this: FlatSpec =>
 
       val spark = ResourceHelper.spark
 
+      val inputConllPath = "./data/ud-treebanks-v2.2/en_ewt-ud-dev.conllu"
+      val applicationId = spark.sparkContext.applicationId
+
+      val defaultCorpusPath= s"./data/universal_tags/$applicationId"
+
+      val trainCoNLLDF = new CoNLLToPOSTextConverter()
+        .setInputCoNNLFilePath(inputConllPath)
+        .setPosColName("pos_tagged")
+        .setlemmaColName("lemma_tagged")
+        .transform()
+
+      trainCoNLLDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(defaultCorpusPath)
+      trainCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
+
       val pipleLineModel = new MultivacPOSModel()
-        .setInputCoNNLFilePath(trainingSentencesPath)
+        .setCorpus(defaultCorpusPath)
         .setIterationCount(1)
         .setInputColName(colName)
         .setLang("english")
-        .setIncludeLemma(true)
         .train()
 
       val wordDataFrame = spark.createDataFrame(Seq((0, testDataset))).toDF("id", colName)
