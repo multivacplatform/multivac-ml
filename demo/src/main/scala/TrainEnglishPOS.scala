@@ -32,46 +32,46 @@ object TrainEnglishPOS extends App {
   private val spark = SessionBuilder.buildSession()
   private val applicationId = spark.sparkContext.applicationId
 
+  /* Convert ConLL-U to labeled text files, ex: The_DET */
+  val defaultCorpusPath= s"./data/universal_tags/$applicationId"
 
-//  /* Convert ConLL-U to labeled text files, ex: The_DET */
-//  val defaultCorpusPath= s"./data/universal_tags/$applicationId"
-//
-//  val trainCoNLLDF = new CoNLLToPOSTextConverter()
-//    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu")
-//    .setPosColName("pos_tagged")
-//    .setlemmaColName("lemma_tagged")
-//    .transform()
-//
-//  trainCoNLLDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(defaultCorpusPath)
-//  trainCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
-//
-//  val devCoNLLDF = new CoNLLToPOSTextConverter()
-//    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-dev.conllu")
-//    .setPosColName("pos_tagged")
-//    .setlemmaColName("lemma_tagged")
-//    .transform()
-//
-//  devCoNLLDF.select("pos_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
-////  trainCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
-//
-//  /* Train POS Tagger Model */
-//  val pipleLineModelEnglish =
-//    Benchmark.time("Time to train the model") {
-//      new MultivacPOSModel()
-//        .setCorpus(s"$defaultCorpusPath/*.txt")
-//        .setIterationCount(6)
-//        .setInputColName("content")
-//        .setLang("default")
-//        .train()
-//    }
-//
-//  pipleLineModelEnglish.write.overwrite.save("models/nlp/pipeline-pos-en_ewt-ud-1.8.0")
-//  pipleLineModelEnglish.stages(3).asInstanceOf[PerceptronModel].write.overwrite.save("models/nlp/pos-en_ewt-ud-1.8.0")
+  val trainCoNLLDF = new CoNLLToPOSTextConverter()
+    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu")
+    .setPosColName("pos_tagged")
+    .setlemmaColName("lemma_tagged")
+    .transform()
+
+  trainCoNLLDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(defaultCorpusPath)
+  trainCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
+
+  val devCoNLLDF = new CoNLLToPOSTextConverter()
+    .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-dev.conllu")
+    .setPosColName("pos_tagged")
+    .setlemmaColName("lemma_tagged")
+    .transform()
+
+  devCoNLLDF.select("pos_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
+  devCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
+
+  /* Train POS Tagger Model */
+  val pipleLineModelEnglish =
+    Benchmark.time("Time to train the model") {
+      new MultivacPOSModel()
+        .setCorpus(s"$defaultCorpusPath/*.txt")
+        .setIterationCount(6)
+        .setInputColName("content")
+        .setLang("default")
+        .train()
+    }
+
+  pipleLineModelEnglish.write.overwrite.save("models/nlp/pipeline-pos-en_ewt-ud-1.8.0")
+  pipleLineModelEnglish.stages(3).asInstanceOf[PerceptronModel].write.overwrite.save("models/nlp/pos-en_ewt-ud-1.8.0")
 
   /* Evaluate the accuracy of the model */
   TestAccuracy.evaluatePOSModel(
-    "./data/ud-treebanks-v2.3/en_ewt-ud-train.conllu",
+    "./data/ud-treebanks-v2.3/en_ewt-ud-test.conllu",
     "models/nlp/pipeline-pos-en_ewt-ud-1.8.0"
   )
+
   spark.close()
 }
