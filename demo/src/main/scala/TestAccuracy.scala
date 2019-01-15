@@ -198,7 +198,7 @@ object TestAccuracy {
       )
       .withColumn("Precision", round($"tp_score" / ($"tp_score" + $"fp_score"), 3))
       .withColumn("Recall", round($"tp_score" / ($"tp_score" + $"fn_score"), 3))
-      .withColumn("F1-Score", round($"Precision" * $"Recall" / ($"Precision" + $"Recall")*2, 3))
+      .withColumn("F1-Score", round((($"Precision" * $"Recall") / ($"Precision" + $"Recall")) * 2, 3))
       .orderBy($"Precision".desc)
 
     scorePerTagDF.show(false)
