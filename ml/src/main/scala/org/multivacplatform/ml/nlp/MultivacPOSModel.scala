@@ -36,10 +36,9 @@ class MultivacPOSModel extends Serializable {
 
   private val spark = ResourceHelper.spark
   private val applicationId = spark.sparkContext.applicationId
-  private val defaultConllOutputPath = s"./data/universal_tags/$applicationId"
+  private val defaultCorpusPath= s"./data/universal_tags/$applicationId"
 
-  var inputCoNNLFilePath: String = ""
-  var outputConllFilePath: String = defaultConllOutputPath
+  var corpusPath: String = defaultCorpusPath
   var lang: String = ""
   var includeLemma: Boolean = true
   var iterationCount: Int = 5
@@ -49,25 +48,13 @@ class MultivacPOSModel extends Serializable {
     *
     * @param value path to ConLL file to train POS Model
     */
-  def setInputCoNNLFilePath(value: String): this.type = { inputCoNNLFilePath = value; this }
-
-  /** setOutputConllFilePath
-    *
-    * @param value output path to write converted CoNLL files `default: ./data/english_universal_tags/$applicationId`
-    */
-  def setOutputConllFilePath(value: String): this.type = { outputConllFilePath = value; this }
+  def setCorpus(value: String): this.type = { corpusPath = value; this }
 
   /** setLang
     *
     * @param value path to ConLL file to train POS Model
     */
   def setLang(value: String): this.type = { lang = value; this }
-
-  /** setIncludeLemma
-    *
-    * @param value path to ConLL file to train POS Model
-    */
-  def setIncludeLemma(value: Boolean): this.type = { includeLemma = value; this }
 
   /** setIterationCount
     *
@@ -87,15 +74,6 @@ class MultivacPOSModel extends Serializable {
     * @return Array[String] to be saved for training `Spark-NLP`
     */
   def train(): PipelineModel = {
-
-    val conlluConverterClass = new CoNLLToPOSTextConverter
-
-    val taggedConnlTextDF = conlluConverterClass.extractingTagsInConllu(inputCoNNLFilePath, posTaggedColName = "pos_tagged", lemmaTaggedColName = "lemma_tagged")
-
-    taggedConnlTextDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(outputConllFilePath)
-    if(includeLemma)
-      taggedConnlTextDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(outputConllFilePath)
-    //    spark.sparkContext.parallelize(taggedConnlText).repartition(5).saveAsTextFile(outputConllFilePath)
 
     val documentAssembler = new DocumentAssembler()
       .setInputCol(inputColName)
@@ -128,7 +106,7 @@ class MultivacPOSModel extends Serializable {
           .addInfixPattern("((?:\\p{L}\\.)+)")
           .addInfixPattern("([\\$#]?\\d+(?:[^\\s\\d]{1}\\d+)*)")
           .addInfixPattern("([\\p{L}\\w]+)")
-      case _ =>
+      case _ | "default" =>
         tokenizer
           .setInputCols(Array("sentence"))
           .setOutputCol("token")
@@ -141,7 +119,7 @@ class MultivacPOSModel extends Serializable {
       .setInputCols(Array("sentence", "token"))
       .setOutputCol("pos")
       .setCorpus(
-        path = s"$outputConllFilePath/*.txt",
+        path = corpusPath,
         delimiter = "_",
         readAs = "SPARK_DATASET",
         options = posOptions
