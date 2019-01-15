@@ -165,19 +165,21 @@ object TestAccuracy {
             breakable {
               if (t == p) {
                 // increament True Positive for this tag
-                metrics += TagScore(t._2, 1, 0, 0, 1)
+                metrics += TagScore(tag = t._2, truePositive = 1, falsePositive = 0, falseNagetive = 0)
+
                 predictTagsWithTokens = predictTagsWithTokens.zipWithIndex.filter(_._2 != j).map(_._1)
                 break()
               } else if (t._1 == p._1) {
                 // increament False Positive for this tag
-                metrics += TagScore(t._2, 0, 1, 0, 1)
-                // increament False Negative for the other tag: punish the tag in the wrong place
-                metrics += TagScore(p._2, 0, 0, 1, 1)
+                metrics += TagScore(tag = p._2, truePositive = 0, falsePositive = 1, falseNagetive = 0)
+                // increament False Negative for the correct tag
+                metrics += TagScore(tag = t._2, truePositive = 0, falsePositive = 0, falseNagetive = 1)
+
                 predictTagsWithTokens = predictTagsWithTokens.zipWithIndex.filter(_._2 != j).map(_._1)
                 break()
               }
               lastMatchIndex += 1
-              if(lastMatchIndex >= 3) break() // after 2 tokens stop loking
+              if(lastMatchIndex >= 3) break() // after 3 tokens stop looking
             }
           }
         }
@@ -185,15 +187,14 @@ object TestAccuracy {
         newColumns
       }).toDF("metrics")
       .select(explode($"metrics").as("tagScores"))
-      //   .filter($"tagScores.tag" =!= "_")
+      .filter($"tagScores.tag" =!= "_")
       //   .filter($"tagScores.tag" =!= "X")
       //   .filter($"tagScores.tag" =!= "INTJ")
       .groupBy($"tagScores.tag")
       .agg(
         sum($"tagScores.truePositive").as("tp_score"),
         sum($"tagScores.falsePositive").as("fp_score"),
-        sum($"tagScores.falseNagetive").as("fn_score"),
-        sum($"tagScores.support").as("support")
+        sum($"tagScores.falseNagetive").as("fn_score")
       )
       .withColumn("Precision", round($"tp_score" / ($"tp_score" + $"fp_score"), 3))
       .withColumn("Recall", round($"tp_score" / ($"tp_score" + $"fn_score"), 3))
@@ -203,7 +204,6 @@ object TestAccuracy {
     scorePerTagDF.show(false)
 
     scorePerTagDF.agg(
-      sum($"support").as("Support"),
       avg($"Precision").as("Precision"),
       avg($"Recall").as("Recall"),
       avg($"F1-Score").as("F1-Score")
