@@ -76,3 +76,4 @@ models/nlp/
 models/word2vec/
 demo/src/main/resources/models
 *.conllu
+*.jar
