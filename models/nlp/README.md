@@ -134,8 +134,8 @@ Only `en_ewt-ud-train.conllu` file was used to train the model:
 
 Precision, Recall and F1-Score against the test dataset `en_ewt-ud-test.conllu`
 
-|tag  |tp_score|fp_score|fn_score|support | Precision          |Recall            |F1-Score          |
-|-----|--------|--------|--------|-------|-----------|------------------|------------------|
+|tag  |tp_score|fp_score|fn_score | Precision          |Recall            |F1-Score          |
+|-----|--------|--------|--------|-----------|------------------|------------------|
 |PUNCT|3259    |2       |6       |0.999    |0.998 |0.998   |
 |CCONJ|758     |4       |6       |0.995    |0.992 |0.993   |
 |DET  |2258    |18      |23      |0.992    |0.99  |0.991   |
@@ -162,8 +162,8 @@ Precision, Recall and F1-Score against the test dataset `en_ewt-ud-test.conllu`
 
 Precision, Recall and F1-Score against the training dataset `en_ewt-ud-train.conllu`
 
-|tag  |tp_score|fp_score|fn_score|support |Precision         |Recall            |F1-Score          |
-|-----|--------|--------|--------|---------|---------|------------------|------------------|
+|tag  |tp_score|fp_score|fn_score |Precision         |Recall            |F1-Score          |
+|-----|--------|--------|--------|---------|------------------|------------------|
 |PUNCT|17920   |8       |9       |1.0      |0.999 |0.999   |
 |NUM  |2302    |7       |36      |0.997    |0.985 |0.991   |
 |CCONJ|4076    |17      |9       |0.996    |0.998 |0.997   |
