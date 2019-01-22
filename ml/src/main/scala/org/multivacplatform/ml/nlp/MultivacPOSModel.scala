@@ -31,7 +31,6 @@ import org.multivacplatform.ml.util.ResourceHelper.spark.implicits._
 import org.multivacplatform.ml.util._
 import org.apache.spark.ml.PipelineModel
 
-
 class MultivacPOSModel extends Serializable {
 
   private val spark = ResourceHelper.spark
