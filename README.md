@@ -12,19 +12,20 @@ Pre-trained Apache Spark's ML Pipeline for NLP, Classification, etc.
 ### POS Tagger models
 
 **Enlgish POS tagger model (UD_English-EWT)**
+Only `en_ewt-ud-train.conllu` file was used to train the model:
 
-Precision, Recall and F1-Score against `en_ewt-ud-test.conllu`
+Precision, Recall and F1-Score against the test dataset `en_ewt-ud-test.conllu`
 
 |Tokens |Precision  |Recall |F1-Score |
 |-------|-----------|-------|---------|
 | 25831 |0.93       |0.91   |0.92     |
 
 
-Precision, Recall and F1-Score against `en_ewt-ud-train.conllu`
+Precision, Recall and F1-Score against the training dataset `en_ewt-ud-train.conllu`
 
 |Tokens |Precision  |Recall |F1-Score |
 |-------|-----------|-------|---------|
-| 63785 |0.98       |0.97   |0.97     |
+| 63785 |0.98       |0.98   |0.98     |
 
 
 > **Precision** is "how useful the POS results are", and **Recall** is "how complete the results are". Precision can be seen as a measure of **exactness or quality**, whereas recall is a measure of **completeness or quantity**. https://en.wikipedia.org/wiki/Precision_and_recall
