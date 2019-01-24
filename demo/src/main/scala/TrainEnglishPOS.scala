@@ -43,7 +43,7 @@ object TrainEnglishPOS extends App {
 
   trainCoNLLDF.select("pos_tagged").coalesce(1).write.mode("OverWrite").text(defaultCorpusPath)
   trainCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
-
+//
   val devCoNLLDF = new CoNLLToPOSTextConverter()
     .setInputCoNNLFilePath("./data/ud-treebanks-v2.3/en_ewt-ud-dev.conllu")
     .setPosColName("pos_tagged")
@@ -51,7 +51,7 @@ object TrainEnglishPOS extends App {
     .transform()
 
   devCoNLLDF.select("pos_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
-  devCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
+//  devCoNLLDF.select("lemma_tagged").coalesce(1).write.mode("Append").text(defaultCorpusPath)
 
   /* Train POS Tagger Model */
   val pipleLineModelEnglish =
@@ -60,7 +60,7 @@ object TrainEnglishPOS extends App {
         .setCorpus(s"$defaultCorpusPath/*.txt")
         .setIterationCount(6)
         .setInputColName("content")
-        .setLang("default")
+        .setLang("english")
         .train()
     }
 
