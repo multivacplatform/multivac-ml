@@ -31,7 +31,8 @@ import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks._
 
 object TestAccuracy {
-  /** posTaggerEnglish_ml
+
+  /** evaluatePOSModel
     * @note
     * Evaluating POS Tagger Model: accuracy, precision, recall, f1-score
     * accuracy: `how many you got right`
@@ -69,7 +70,6 @@ object TestAccuracy {
       testTokensTagsDF.filter("id=4").show(false)
       testTokensTagsDF.show
     }
-
 
     // Convert CoNLL-U to Text for training the test Dataframe
     // This DataFrame will be used for testing the POS Model (SentenceDetector, Tokenizer, and POS tagger)
