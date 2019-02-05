@@ -112,18 +112,44 @@ class CoNLLToPOSTextConverter extends Serializable {
 
   private def extractPOSTags = udf { docs: Seq[String] =>
     var posTagsArray = ArrayBuffer[String]()
-    for(e <- docs){
+    var previousSentenceNumber = Array[String]()
+
+    for ((e,i) <- docs.zipWithIndex){
       val splitedArray = e.split("\t")
-      posTagsArray += splitedArray(1) + "_" + splitedArray(3)
+      val currentSentenceNumber = splitedArray(0).split("-")
+
+      if(currentSentenceNumber.length > 1){
+        previousSentenceNumber = currentSentenceNumber
+        val nextSentence = docs(i+1).split("\t")
+        posTagsArray += splitedArray(1) + "_" + nextSentence(3)
+
+      }else if(previousSentenceNumber.contains(currentSentenceNumber(0))){
+
+      }else{
+        posTagsArray += splitedArray(1) + "_" + splitedArray(3)
+      }
     }
     posTagsArray
   }
 
   private def extractLemmaTags = udf { docs: Seq[String] =>
     var posTagsArray = ArrayBuffer[String]()
-    for(e <- docs){
+    var previousSentenceNumber = Array[String]()
+
+    for ((e, i) <- docs.zipWithIndex) {
       val splitedArray = e.split("\t")
-      posTagsArray += splitedArray(2) + "_" + splitedArray(3)
+      val currentSentenceNumber = splitedArray(0).split("-")
+
+      if (currentSentenceNumber.length > 1) {
+        previousSentenceNumber = currentSentenceNumber
+        val nextSentence = docs(i + 1).split("\t")
+        posTagsArray += splitedArray(2) + "_" + nextSentence(3)
+
+      } else if (previousSentenceNumber.contains(currentSentenceNumber(0))) {
+
+      } else {
+        posTagsArray += splitedArray(2) + "_" + splitedArray(3)
+      }
     }
     posTagsArray
   }
