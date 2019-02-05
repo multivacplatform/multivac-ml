@@ -211,21 +211,47 @@ object TestAccuracy {
   }
 
   private def extractTokens= udf { docs: Seq[String] =>
-    var tokensArray = ArrayBuffer[String]()
-    for(e <- docs){
+    var posTagsArray = ArrayBuffer[String]()
+    var previousSentenceNumber = Array[String]()
+
+    for ((e,i) <- docs.zipWithIndex){
       val splitedArray = e.split("\t")
-      tokensArray += splitedArray(1)
+      val currentSentenceNumber = splitedArray(0).split("-")
+
+      if(currentSentenceNumber.length > 1){
+        previousSentenceNumber = currentSentenceNumber
+        val nextSentence = docs(i+1).split("\t")
+        posTagsArray += splitedArray(1)
+
+      }else if(previousSentenceNumber.contains(currentSentenceNumber(0))){
+
+      }else{
+        posTagsArray += splitedArray(1)
+      }
     }
-    tokensArray
+    posTagsArray
   }
 
   private def extractTags= udf { docs: Seq[String] =>
-    var tagsArray = ArrayBuffer[String]()
-    for(e <- docs){
+    var posTagsArray = ArrayBuffer[String]()
+    var previousSentenceNumber = Array[String]()
+
+    for ((e,i) <- docs.zipWithIndex){
       val splitedArray = e.split("\t")
-      tagsArray += splitedArray(3)
+      val currentSentenceNumber = splitedArray(0).split("-")
+
+      if(currentSentenceNumber.length > 1){
+        previousSentenceNumber = currentSentenceNumber
+        val nextSentence = docs(i+1).split("\t")
+        posTagsArray += nextSentence(3)
+
+      }else if(previousSentenceNumber.contains(currentSentenceNumber(0))){
+
+      }else{
+        posTagsArray += splitedArray(3)
+      }
     }
-    tagsArray
+    posTagsArray
   }
 
   private def calLengthOfArray= udf { docs: Seq[String] =>
