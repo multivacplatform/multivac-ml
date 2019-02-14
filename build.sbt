@@ -7,7 +7,7 @@ enablePlugins(JavaServerAppPackaging)
 enablePlugins(JavaAppPackaging)
 
 val sparkVer = "2.4.0"
-val sparknlpVer = "1.8.0"
+val sparknlpVer = "1.8.2"
 val corenlpVer = "3.9.2"
 val hadoopVer = "2.7.2"
 val scalaTestVer = "3.0.0"
