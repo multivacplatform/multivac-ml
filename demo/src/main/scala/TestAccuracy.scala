@@ -188,7 +188,7 @@ object TestAccuracy {
       }).toDF("metrics")
       .select(explode($"metrics").as("tagScores"))
       .filter($"tagScores.tag" =!= "_")
-      //   .filter($"tagScores.tag" =!= "X")
+         .filter($"tagScores.tag" =!= "X")
       //   .filter($"tagScores.tag" =!= "INTJ")
       .groupBy($"tagScores.tag")
       .agg(
