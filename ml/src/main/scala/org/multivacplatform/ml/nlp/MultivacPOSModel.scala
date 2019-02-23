@@ -124,27 +124,12 @@ class MultivacPOSModel extends Serializable {
         options = posOptions
       )
 
-    // Finishers
-    val tokenFinisher = new Finisher()
-      .setInputCols("token")
-      .setOutputCols("token_array")
-      .setCleanAnnotations(false)
-      .setOutputAsArray(true)
-
-    val posFinisher = new Finisher()
-      .setInputCols("pos")
-      .setOutputCols("pos_array")
-      .setCleanAnnotations(false)
-      .setOutputAsArray(true)
-
     val pipeline = new Pipeline()
       .setStages(Array(
         documentAssembler,
         sentenceDetector,
         tokenizer,
-        posTagger,
-        tokenFinisher,
-        posFinisher
+        posTagger
       ))
 
     pipeline.fit(Seq.empty[String].toDF(inputColName))
