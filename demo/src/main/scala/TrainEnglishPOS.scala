@@ -66,13 +66,13 @@ object TrainEnglishPOS extends App {
         .train()
     }
 
-  pipleLineModelEnglish.write.overwrite.save("models/nlp/pipeline-pos-en_ewt-ud-1.8.0")
-  pipleLineModelEnglish.stages(3).asInstanceOf[PerceptronModel].write.overwrite.save("models/nlp/pos-en_ewt-ud-1.8.0")
+  pipleLineModelEnglish.write.overwrite.save("models/nlp/pipeline-pos-en_ewt-ud-1.8.2")
+  pipleLineModelEnglish.stages(3).asInstanceOf[PerceptronModel].write.overwrite.save("models/nlp/pos-en_ewt-ud-1.8.2")
 
   /* Evaluate the accuracy of the model */
   TestAccuracy.evaluatePOSModel(
     "./data/ud-treebanks-v2.3/en_ewt-ud-test.conllu",
-    "models/nlp/pipeline-pos-en_ewt-ud-1.8.0"
+    "models/nlp/pipeline-pos-en_ewt-ud-1.8.2"
   )
 
   spark.close()
